@@ -6,4 +6,6 @@ st.write("Get visual based on movie name")
 x=st.text_input("Movie"."Star Wars")
 if st.button("Submit"):
   st.write(f"your favorite movie is '{x}'")
+data=pd.read_csv("movies.csv")
+st.write(data)
   
