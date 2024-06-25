@@ -49,6 +49,7 @@ with col2:
 df = df[(df["Order Date"] >= date1) & (df["Order Date"] <= date2)].copy()
 st.sidebar.header("Select your filter: ")
 state = st.sidebar.multiselect("Select the State", df2["State"].unique())
+df2=df.copy()
 if not state:
     df3 = df2.copy()
 else:
