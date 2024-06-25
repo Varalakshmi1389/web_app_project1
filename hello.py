@@ -23,13 +23,17 @@ if uploaded_file is not None:
 
     # To convert to a string based IO:
     stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
-    st.write(stringio)
+    #st.write(stringio)
 
     # To read file as string:
     string_data = stringio.read()
-    st.write(string_data)
+    #st.write(string_data)
 
     # Can be used wherever a "file-like" object is accepted:
     dataframe = pd.read_csv(uploaded_file)
-    st.write(dataframe)
+    #st.write(dataframe)
+else:
+    df=pd.read_csv("salesdatacsvsample.csv")
+
+st.write(df)
   
