@@ -31,9 +31,8 @@ if uploaded_file is not None:
 
     # Can be used wherever a "file-like" object is accepted:
     dataframe = pd.read_csv(uploaded_file)
-    #st.write(dataframe)
+    st.write(dataframe)
 else:
     df=pd.read_csv("salesdatacsvsample.csv")
-
-st.write(df)
+    st.write(df)
   
