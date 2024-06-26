@@ -61,7 +61,7 @@ if not state:
     df3 = df2.copy()
 else:
     df3 = df2[df2["State"].isin(state)]
-    
+ df6 =df.copy() 
 state_city_dict = df6.groupby('State')['City'].unique().to_dict()
 
 st.sidebar.header("Select your filter:")
