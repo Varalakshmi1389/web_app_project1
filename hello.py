@@ -62,3 +62,27 @@ if not state:
 else:
     df3 = df2[df2["State"].isin(state)]
     
+df6 = df.copy()
+st.sidebar.header("Select your filter: ")
+# Create a dictionary with states and their unique cities
+state_city_dict = df6.groupby('State')['City'].unique().to_dict()
+
+# Streamlit Sidebar
+st.sidebar.header("Select your filter:")
+
+# Display states in sidebar
+selected_state = st.sidebar.selectbox("Select the state", list(state_city_dict.keys()))
+
+# Display cities based on selected state
+if selected_state:
+    cities = state_city_dict[selected_state]
+    city = st.sidebar.multiselect("Select the city", cities)
+    if not city:
+        df7 = df6[df6['State'] == selected_state]
+    else:
+        df7 = df6[(df6['State'] == selected_state) & (df6['City'].isin(city))]
+else:
+    df7 = df6.copy()
+
+# Display the filtered DataFrame
+st.write(df7)
