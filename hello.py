@@ -76,3 +76,10 @@ else:
     df7 = df6.copy()
 
 st.write(df7)
+
+#creating a column chart
+df8 = df.copy()
+city_profit = df8.groupby("city")["profit"].sum().reset_index()
+
+st.column_chart(city_profit.set_index("city"))
+
