@@ -63,7 +63,6 @@ else:
     df3 = df2[df2["State"].isin(state)]
     
 df6 = df.copy()
-st.sidebar.header("Select your filter: ")
 # Create a dictionary with states and their unique cities
 state_city_dict = df6.groupby('State')['City'].unique().to_dict()
 
