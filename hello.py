@@ -81,5 +81,5 @@ st.write(df7)
 df8 = df.copy()
 city_profit = df8.groupby("city")["profit"].sum().reset_index()
 
-st.column_chart(city_profit.set_index("city"))
+st.bar_chart(city_profit.set_index("city"))
 
