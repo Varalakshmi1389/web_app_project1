@@ -20,7 +20,7 @@ st.write(df)
 st.title("Operation Data")
 df1=df.copy()
 summary_df = df.groupby(['CreationDate', 'Operation']).agg({'UserId': pd.Series.nunique}).reset_index()
-summary_df = summary_df.rename(columns={'UserId': 'Count of Unique Users'})
+summary_df = summary_df.rename(columns={'Opration': 'Count of Opration'})
 
 st.subheader("Summary Table")
 st.table(summary_df)
