@@ -19,11 +19,11 @@ st.set_page_config(
 df = pd.read_csv("inputfile.csv")
 st.write(df)
 
+# Convert CreationDate to datetime format and extract date
+df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
+
 # Create a copy of the DataFrame
 df1 = df.copy()
-
-# Convert CreationDate to datetime format and extract date
-df1['Date'] = pd.to_datetime(df1['CreationDate']).dt.date
 
 # Group by UserId, Date, and Operation to count occurrences
 summary_df = df1.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
@@ -38,24 +38,19 @@ final_summary_df = summary_df.groupby('UserId').agg({
 st.subheader("Operation Count by UserId, Date, and Operation")
 st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
-# Create for Operation
-st.sidebar.header("Choose your filter: ")
-operation = st.sidebar.multiselect("Pick your operation", df["Operation"].unique())
-if not operation:
-    df2 = df.copy()
-else:
-    df2 = df[df["Operation"].isin(operation)]
+# Sidebar filters for Operation and CreationDate
+st.sidebar.header("Filters")
+selected_operation = st.sidebar.multiselect("Select Operation(s)", df["Operation"].unique())
+selected_dates = st.sidebar.multiselect("Select Date(s)", df["CreationDate"].unique())
 
-# Create for Date
-st.sidebar.header("Choose your filter: ")
-date = st.sidebar.multiselect("Pick your Date", df["CreationDate"].unique())
-if not date:
-    df3 = df.copy()
-else:
-    df3 = df[df["CreationDate"].isin(date)]
+# Apply filters to create filtered DataFrame
+if selected_operation:
+    df = df[df['Operation'].isin(selected_operation)]
+if selected_dates:
+    df = df[df['CreationDate'].isin(selected_dates)]
 
 # Group by Date to count occurrences of Operation
-count_by_date = df1.groupby('Date').size().reset_index(name='Count of Operations')
+count_by_date = df.groupby('Date').size().reset_index(name='Count of Operations')
 
 # Plotting bar chart for Count of Operations by CreationDate
 st.subheader("Count of Operations by Creation Date")
