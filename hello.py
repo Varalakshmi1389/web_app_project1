@@ -17,7 +17,6 @@ st.set_page_config(
 df=pd.read_csv("inputfile.csv")
 st.write(df)
 
-st.title("Operation Data")
 df1=df.copy()
 
 df1['Date'] = pd.to_datetime(df1['CreationDate']).dt.date
@@ -29,7 +28,7 @@ final_summary_df = summary_df.groupby('UserId').agg({
     'Operation': 'first',
     'Count of Operations': 'sum'
 }).reset_index()
-
+st.subheader("Operation Count by UserId, Date, and Operation")
 st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
 
