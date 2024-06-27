@@ -20,18 +20,18 @@ st.write(df)
 st.title("Operation Data")
 df1=df.copy()
 
-df1['date'] = pd.to_datetime(df1['CreationDate']).dt.date
+df1['Date'] = pd.to_datetime(df1['CreationDate']).dt.date
 
-summary_df = df1.groupby(['UserId', 'date', 'Operation']).size().reset_index(name='Count of Operations')
+summary_df = df1.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
 
 final_summary_df = summary_df.groupby('UserId').agg({
-    'date': 'first', 
+    'Date': 'first', 
     'Operation': 'first',
     'Count of Operations': 'sum'
 }).reset_index()
 
-st.subheader("Operation Count by Email, date, and Operation")
-st.table(final_summary_df[['UserId', 'date', 'Operation', 'Count of Operations']])
+st.subheader("Operation Count by Email, Date, and Operation")
+st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
 
 
