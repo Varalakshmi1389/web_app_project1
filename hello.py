@@ -45,7 +45,8 @@ if not operation:
     df2 = df.copy()
 else:
     df2 = df[df["Operation"].isin(operation)]
-    
+
+count_by_date = df.groupby('Date').size().reset_index(name='Count of Operations')
 # Plotting bar chart for Count of Operations by CreationDate
 st.subheader("Count of Operations by Creation Date")
 fig = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
