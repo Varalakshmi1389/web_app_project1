@@ -41,21 +41,4 @@ st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']
 # Sidebar filters for Operation and CreationDate
 st.sidebar.header("Filters")
 selected_operation = st.sidebar.multiselect("Select Operation(s)", df["Operation"].unique())
-selected_dates = st.sidebar.multiselect("Select Date(s)", df["CreationDate"].unique())
-
-# Apply filters to create filtered DataFrame
-if selected_operation:
-    df = df[df['Operation'].isin(selected_operation)]
-if selected_dates:
-    df = df[df['CreationDate'].isin(selected_dates)]
-
-# Group by Date to count occurrences of Operation
-count_by_date = df.groupby('Date').size().reset_index(name='Count of Operations')
-
-# Plotting bar chart for Count of Operations by CreationDate
-st.subheader("Count of Operations by Creation Date")
-fig = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
-             template='seaborn', title='Count of Operations by Creation Date')
-fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-fig.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
-st.plotly_chart(fig, use_container_width=True)
+selected_dates
