@@ -13,3 +13,12 @@ st.set_page_config(
         'About': "# This is a header. This is an *extremely* cool app!"
     }
 )
+
+# Create a DataFrame
+data="‪C:\Users\LAKSHMI\Desktop\Py\inputfile.csv"
+df = pd.DataFrame(data)
+
+# Display the DataFrame in Streamlit
+st.title("Operation Data")
+st.table(df)
+
