@@ -48,11 +48,11 @@ else:
 
 # Create for Date
 st.sidebar.header("Choose your filter: ")
-date = st.sidebar.multiselect("Pick your Date", df["Date"].unique())
+date = st.sidebar.multiselect("Pick your Date", df["CreationDate"].unique())
 if not date:
-    df2 = df.copy()
+    df3 = df.copy()
 else:
-    df2 = df[df["Date"].isin(date)]
+    df3 = df[df["CreationDate"].isin(date)]
 
 # Group by Date to count occurrences of Operation
 count_by_date = df1.groupby('Date').size().reset_index(name='Count of Operations')
