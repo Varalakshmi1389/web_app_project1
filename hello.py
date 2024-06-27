@@ -14,10 +14,16 @@ st.set_page_config(
     }
 )
 
-# Read data from CSV file
-csv_file_path = "C:/Users/LAKSHMI/Desktop/Py/inputfile.csv"
-df = pd.read_csv(csv_file_path)
-
-# Display the DataFrame in Streamlit
 st.title("Operation Data")
-st.table(df)
+
+# File uploader
+uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+
+if uploaded_file is not None:
+    # Read the CSV file
+    df = pd.read_csv(uploaded_file)
+
+    # Display the DataFrame in Streamlit
+    st.table(df)
+else:
+    st.write("Please upload a CSV file to see the data.")
