@@ -47,3 +47,12 @@ ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 
 st.subheader("Pie Chart: Sum of RecordType by Operation")
 st.pyplot(fig)
+
+# Create for Operation
+st.sidebar.header("Choose your filter: ")
+operation = st.sidebar.multiselect("Pick your operation", df["Operation"].unique())
+if not operation:
+    df2 = df.copy()
+else:
+    df2 = df[df["Operation"].isin(operation)]
+
