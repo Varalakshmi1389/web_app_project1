@@ -38,16 +38,6 @@ final_summary_df = summary_df.groupby('UserId').agg({
 st.subheader("Operation Count by UserId, Date, and Operation")
 st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
-record_type_summary = df1.groupby('Operation')['RecordType'].sum().reset_index()
-
-# Plotting pie chart for sum of RecordType by Operation
-fig, ax = plt.subplots()
-ax.pie(record_type_summary['RecordType'], labels=record_type_summary['Operation'], autopct='%1.1f%%', startangle=90)
-ax.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
-
-st.subheader("Pie Chart: Sum of RecordType by Operation")
-st.pyplot(fig)
-
 # Create for Operation
 st.sidebar.header("Choose your filter: ")
 operation = st.sidebar.multiselect("Pick your operation", df["Operation"].unique())
@@ -55,4 +45,16 @@ if not operation:
     df2 = df.copy()
 else:
     df2 = df[df["Operation"].isin(operation)]
+
+with col1:
+    st.subheader("Count of operations by CreationDate")
+    fig = px.bar(category_df, x = "CreationDate", y = "Operation", text = ['${:,.2f}'.format(x) for x in category_df["Sales"]],
+                 template = "seaborn")
+    st.plotly_chart(fig,use_container_width=True, height = 200)
+
+with col2:
+    st.subheader("RecordType by Operation")
+    fig = px.pie(filtered_df, values = "RecordType", names = "Operation", hole = 0.5)
+    fig.update_traces(text = filtered_df["Operation"], textposition = "outside")
+    st.plotly_chart(fig,use_container_width=True)
 
