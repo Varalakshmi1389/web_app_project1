@@ -30,7 +30,6 @@ final_summary_df = summary_df.groupby('UserId').agg({
     'Count of Operations': 'sum'
 }).reset_index()
 
-st.subheader("Operation Count by Email, Date, and Operation")
 st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
 
