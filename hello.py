@@ -20,7 +20,7 @@ st.write(df)
 st.title("Operation Data")
 df1=df.copy()
 
-#df1['CreationDate'] = pd.to_datetime(df1['CreationDate'])
+df1['CreationDate'] = pd.to_date(df1['CreationDate'])
 
     # Group by UserId, CreationDate, and Operation to count occurrences
 summary_df = df1.groupby(['UserId', 'CreationDate', 'Operation']).size().reset_index(name='Count of Operations')
