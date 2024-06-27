@@ -49,17 +49,22 @@ ax[0].pie(record_type_summary['RecordType'], labels=record_type_summary['Operati
 ax[0].axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle.
 ax[0].set_title('Sum of RecordType by Operation')
 
+st.subheader("Pie Chart: Sum of RecordType by Operation")
+st.pyplot(fig)
+
 # Prepare data for Line Chart
 line_data = df1.groupby(['Date', 'Operation']).size().unstack(fill_value=0).reset_index()
 
 # Line Chart
+fig, ax = plt.subplots(figsize=(10, 6))  # Create a new figure for the line chart
+
 for column in line_data.columns[1:]:  # Skip the 'Date' column
-    ax[1].plot(line_data['Date'], line_data[column], marker='o', label=column)
+    ax.plot(line_data['Date'], line_data[column], marker='o', label=column)
 
-ax[1].set_xlabel('Creation Date')
-ax[1].set_ylabel('Count of Operations')
-ax[1].set_title('Count of Operations by Creation Date')
-ax[1].legend(title='Operations')
+ax.set_xlabel('Creation Date')
+ax.set_ylabel('Count of Operations')
+ax.set_title('Count of Operations by Creation Date')
+ax.legend(title='Operations')
 
-st.subheader("Charts: Sum of RecordType by Operation and Count of Operations by Creation Date")
+st.subheader("Line Chart: Count of Operations by Creation Date")
 st.pyplot(fig)
