@@ -46,6 +46,14 @@ if not operation:
 else:
     df2 = df[df["Operation"].isin(operation)]
 
+# Create for Date
+st.sidebar.header("Choose your filter: ")
+date = st.sidebar.multiselect("Pick your Date", df["Date"].unique())
+if not date:
+    df2 = df.copy()
+else:
+    df2 = df[df["Date"].isin(date)]
+
 # Group by Date to count occurrences of Operation
 count_by_date = df1.groupby('Date').size().reset_index(name='Count of Operations')
 
