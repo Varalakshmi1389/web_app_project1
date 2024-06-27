@@ -49,7 +49,7 @@ else:
 col1, col2 = st.columns((2))
 with col1:
     st.subheader("Count of operations by CreationDate")
-    fig = px.bar(category_df, x = "CreationDate", y = "Operation", text = ['${:,.2f}'.format(x) for x in category_df["Sales"]],
+    fig = px.bar(category_df, x = "CreationDate", y = "Operation", text = ['${:,.2f}'.format(x) for x in category_df["Operation"]],
                  template = "seaborn")
     st.plotly_chart(fig,use_container_width=True, height = 200)
 
