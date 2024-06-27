@@ -45,7 +45,8 @@ if not operation:
     df2 = df.copy()
 else:
     df2 = df[df["Operation"].isin(operation)]
-
+    
+col1, col2 = st.columns((2))
 with col1:
     st.subheader("Count of operations by CreationDate")
     fig = px.bar(category_df, x = "CreationDate", y = "Operation", text = ['${:,.2f}'.format(x) for x in category_df["Sales"]],
