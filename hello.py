@@ -46,16 +46,11 @@ if not operation:
 else:
     df2 = df[df["Operation"].isin(operation)]
     
-col1, col2 = st.columns((2))
-with col1:
-    st.subheader("Count of operations by CreationDate")
-    fig = px.bar(category_df, x = "CreationDate", y = "Operation", text = ['${:,.2f}'.format(x) for x in category_df["Operation"]],
-                 template = "seaborn")
-    st.plotly_chart(fig,use_container_width=True, height = 200)
-
-with col2:
-    st.subheader("RecordType by Operation")
-    fig = px.pie(filtered_df, values = "RecordType", names = "Operation", hole = 0.5)
-    fig.update_traces(text = filtered_df["Operation"], textposition = "outside")
-    st.plotly_chart(fig,use_container_width=True)
+# Plotting bar chart for Count of Operations by CreationDate
+st.subheader("Count of Operations by Creation Date")
+fig = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
+             template='seaborn', title='Count of Operations by Creation Date')
+fig.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+fig.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
+st.plotly_chart(fig, use_container_width=True)
 
