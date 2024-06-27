@@ -20,7 +20,7 @@ st.write(df)
 st.title("Operation Data")
 df1=df.copy()
   # Generate summary table
-df1['Count of Operation'] = df1.groupby(['CreationDate', 'Operation', 'UserId'])['UserId'].transform('count'))
+df1['Count of Operation'] = df1.groupby(['CreationDate', 'Operation', 'UserId'])['UserId'].transform('count')
 summary_df = df1.drop_duplicates(subset=['CreationDate', 'Operation', 'UserId'])
 
 st.subheader("Summary Table")
