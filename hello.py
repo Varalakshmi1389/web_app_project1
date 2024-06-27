@@ -20,10 +20,9 @@ st.write(df)
 st.title("Operation Data")
 df1=df.copy()
   # Generate summary table
-df1['Count of Operation'] = df1.groupby(['CreationDate', 'Operation', 'UserId'])['UserId'].transform('count')
-summary_df = df1.drop_duplicates(subset=['CreationDate', 'Operation', 'UserId'])
+summary_df = df1.groupby('UserId').size().reset_index(name='Count of Operations')
 
-st.subheader("Summary Table")
-st.table(summary_df[['CreationDate', 'Operation', 'UserId', 'Count of Operation']])
+st.subheader("Operation Count by Email")
+ st.table(summary_df)
 
 
