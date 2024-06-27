@@ -23,6 +23,6 @@ df1=df.copy()
 summary_df = df1.groupby('UserId').size().reset_index(name='Count of Operations')
 
 st.subheader("Operation Count by Email")
- st.table(summary_df)
+st.table(summary_df)
 
 
