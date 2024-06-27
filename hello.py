@@ -24,7 +24,7 @@ df1=df.copy()
 
 #st.subheader("Operation Count by Email")
 #st.table(summary_df)
-summary_df = df1.groupby(['UserId'.unique(), 'CreationDate', 'Operation']).size().reset_index(name='Count of Operations')
+summary_df = df1.groupby(['UserId', 'CreationDate', 'Operation']).unique().size().reset_index(name='Count of Operations')
 
 st.subheader("Operation Count by Email, CreationDate, and Operation")
 st.table(summary_df)
