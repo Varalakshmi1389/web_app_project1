@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 
+# Set page configuration
 st.set_page_config(
     page_title="Operations",
     page_icon="🧊",
@@ -14,11 +14,10 @@ st.set_page_config(
     }
 )
 
-# Create a DataFrame
-data="‪C:\Users\LAKSHMI\Desktop\Py\inputfile.csv"
-df = pd.DataFrame(data)
+# Read data from CSV file
+csv_file_path = "C:/Users/LAKSHMI/Desktop/Py/inputfile.csv"
+df = pd.read_csv(csv_file_path)
 
 # Display the DataFrame in Streamlit
 st.title("Operation Data")
 st.table(df)
-
