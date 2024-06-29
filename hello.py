@@ -5,7 +5,6 @@ import plotly.express as px
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
 
-
 # Initialize page state
 page = st.sidebar.empty()
 
@@ -17,6 +16,9 @@ if st.session_state.loggedin:
     # Add your main application content here
     # For example:
     st.write("You are now logged in.")
+
+    # Redirect to another page after successful login
+    st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
 
 else:
     st.sidebar.header("Login")
@@ -36,9 +38,13 @@ else:
             page.title("Welcome to the Application!")
             # You can redirect or change the main content here after successful login
             st.write("You are now logged in.")
+
+            # Redirect to another page after successful login
+            st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
         else:
             st.error("Incorrect User ID or Password. Please try again.")
 
+# Page configuration
 st.set_page_config(
     page_title="Operations",
     page_icon="🧊",
@@ -46,7 +52,4 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
-)
+        'Report a bug': "https://www.ex
