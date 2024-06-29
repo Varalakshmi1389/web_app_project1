@@ -5,18 +5,6 @@ import plotly.express as px
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
 
-# Set page configuration
-st.set_page_config(
-    page_title="Operations123",
-    page_icon="🧊",
-    layout="wide",
-    initial_sidebar_state="expanded",
-    menu_items={
-        'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.extremelycoolapp.com/bug",
-        'About': "# This is a header. This is an *extremely* cool app!"
-    }
-)
 
 # Initialize page state
 page = st.sidebar.empty()
