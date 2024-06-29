@@ -1,12 +1,10 @@
 import streamlit as st
-import pandas as pd
-import plotly.express as px
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
 
 # Initialize page state
-page = st.sidebar.empty()
+page = st.empty()
 
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
@@ -35,7 +33,6 @@ else:
         if user_id == CORRECT_USER_ID and password == CORRECT_PASSWORD:
             st.success("Logged in successfully!")
             st.session_state.loggedin = True
-            page.title("Welcome to the Application!")
             # You can redirect or change the main content here after successful login
             st.write("You are now logged in.")
 
@@ -44,8 +41,8 @@ else:
         else:
             st.error("Incorrect User ID or Password. Please try again.")
 
-# Page configuration
-    st.set_page_config(
+# Page configuration should be set before any Streamlit elements are created
+st.set_page_config(
     page_title="Operations",
     page_icon="🧊",
     layout="wide",
