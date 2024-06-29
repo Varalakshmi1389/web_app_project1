@@ -45,7 +45,7 @@ else:
             st.error("Incorrect User ID or Password. Please try again.")
 
 # Page configuration
-st.set_page_config(
+    st.set_page_config(
     page_title="Operations",
     page_icon="🧊",
     layout="wide",
