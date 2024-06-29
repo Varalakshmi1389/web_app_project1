@@ -52,6 +52,14 @@ st.set_page_config(
     initial_sidebar_state="expanded",
     menu_items={
         'Get Help': 'https://www.extremelycoolapp.com/help',
-        'Report a bug': "https://www.ex
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
     }
 )
+
+# Check if logged_in query parameter is set to True, then navigate to another page
+if st.experimental_get_query_params().get('logged_in'):
+    st.write("Redirecting to another page...")
+    # Replace with code to navigate to another Streamlit page or load another content
+    # For demonstration, you can simulate navigation using st.write or st.markdown
+    st.write("You have successfully logged in!")
