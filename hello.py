@@ -7,7 +7,7 @@ CORRECT_PASSWORD = "123"
 
 # Set page configuration
 st.set_page_config(
-    page_title="Operations1",
+    page_title="Operations123",
     page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded",
