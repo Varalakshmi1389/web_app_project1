@@ -86,9 +86,8 @@ def display_main_content():
 # Function to display another page content
 def display_another_page():
     st.title("Page2")
-    st.write("This is another page content.")
-
-    # Load the primary CSV file
+    
+ # Load the primary CSV file
     try:
         df = pd.read_csv("inputfile.csv")
     except FileNotFoundError:
@@ -105,14 +104,14 @@ def display_another_page():
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
 
     # Group by Fullname to count occurrences of Operation
-    count_by_fullname = df.groupby('Fullname').size().reset_index(name='Count of Operations')
+    RecordType_by_fullname = df.groupby('Fullname').size().reset_index(name='sum of RecordType')
 
     # Plotting bar chart for Count of Operations by Fullname
-    st.subheader("Count of Operations by Fullname")
-    fig_bar_fullname = px.bar(count_by_fullname, x='Fullname', y='Count of Operations', text='Count of Operations',
-                              template='seaborn', title='Count of Operations by Fullname')
+    
+    fig_bar_fullname = px.bar(RecordType_by_fullname, x='Fullname', y='sum of RecordType', text='sum of RecordType',
+                              template='seaborn', title='sum of RecordType by Fullname')
     fig_bar_fullname.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
+    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
     st.plotly_chart(fig_bar_fullname, use_container_width=True)
 
 # Initialize page state
