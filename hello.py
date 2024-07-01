@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -88,7 +87,33 @@ def display_main_content():
 def display_another_page():
     st.title("Page2")
     st.write("This is another page content.")
-    # Add more content for the new page as needed
+
+    # Load the primary CSV file
+    try:
+        df = pd.read_csv("inputfile.csv")
+    except FileNotFoundError:
+        st.error("The file 'inputfile.csv' was not found.")
+        return
+
+    # Load and merge the secondary CSV file
+    try:
+        df1 = pd.read_csv("inputfile1.csv")
+        df = pd.concat([df, df1])
+    except FileNotFoundError:
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+
+    df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
+
+    # Group by Fullname to count occurrences of Operation
+    count_by_fullname = df.groupby('Fullname').size().reset_index(name='Count of Operations')
+
+    # Plotting bar chart for Count of Operations by Fullname
+    st.subheader("Count of Operations by Fullname")
+    fig_bar_fullname = px.bar(count_by_fullname, x='Fullname', y='Count of Operations', text='Count of Operations',
+                              template='seaborn', title='Count of Operations by Fullname')
+    fig_bar_fullname.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
+    st.plotly_chart(fig_bar_fullname, use_container_width=True)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
