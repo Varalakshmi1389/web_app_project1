@@ -130,18 +130,28 @@ def display_another_page():
     else:
         df_merged = df
 
-    # Check if the 'Fullname' column exists
+    # Check if the 'Full Name' column exists
     if 'Fullname' not in df_merged.columns:
-        st.error("The column 'Fullname' is missing from the merged DataFrame.")
+        st.error("The column 'Full Name' is missing from the merged DataFrame.")
         return
 
+    # Sidebar filter for Full Name
+    
+    selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
+
+    # Apply Full Name filter to the DataFrame
+    if selected_full_names:
+        df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
+    else:
+        df_filtered = df_merged
+
     # Group by Full Name to count occurrences of Operation
-    count_by_full_name = df_merged.groupby('Fullname').size().reset_index(name='Count of Operations')
+    count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by Full Name
 
     fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations',
-                               template='seaborn', title='Count of Operations by Fullname')
+                               template='seaborn', title='Count of Operations by Full Name')
     fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar_full_name, use_container_width=True)
