@@ -34,8 +34,8 @@ def display_main_content():
         df1 = pd.read_csv("inputfile1.csv")
         st.write("Secondary file loaded successfully.")
         st.write(df1.head())
-        # Perform an inner join on 'UserId' (assuming 'UserId' is the common key)
-        df = pd.merge(df, df1, on='UserId', how='inner')
+        # Perform an inner join on 'UserId' and 'Uderid'
+        df = pd.merge(df, df1, left_on='UserId', right_on='Uderid', how='left')
         st.write("Files joined successfully.")
         st.write(df.head())
     except FileNotFoundError:
