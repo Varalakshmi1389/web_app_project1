@@ -21,6 +21,11 @@ st.set_page_config(
 # Function to display the main content after login
 def display_main_content():
     df = pd.read_csv("inputfile.csv")
+    df1 = pd.read_csv("input1.csv")
+    
+    # Assuming the files have the same structure and we want to concatenate them
+    df = pd.concat([df, df1])
+
     st.write(df)
 
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
