@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -19,6 +18,7 @@ st.set_page_config(
     }
 )
 
+# Function to display the main content after login
 def display_main_content():
     # Load the primary CSV file
     try:
@@ -35,13 +35,13 @@ def display_main_content():
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
         df_merged = df
 
-    st.write(df)
+    st.write(df_merged)
 
-    df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
-    df1 = df.copy()
+    df_merged['Date'] = pd.to_datetime(df_merged['CreationDate']).dt.date
+    df1_copy = df_merged.copy()
 
     # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df1.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+    summary_df = df1_copy.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
 
     final_summary_df = summary_df.groupby('UserId').agg({
         'Date': 'first',
@@ -54,17 +54,17 @@ def display_main_content():
 
     # Sidebar filters for Operation and CreationDate
     st.sidebar.header("Filters")
-    selected_operation = st.sidebar.multiselect("Select Operation(s)", df["Operation"].unique())
-    selected_dates = st.sidebar.multiselect("Select Date(s)", df["CreationDate"].unique())
+    selected_operation = st.sidebar.multiselect("Select Operation(s)", df_merged["Operation"].unique())
+    selected_dates = st.sidebar.multiselect("Select Date(s)", df_merged["CreationDate"].unique())
 
     # Apply filters to create filtered DataFrame
     if selected_operation:
-        df = df[df['Operation'].isin(selected_operation)]
+        df_merged = df_merged[df_merged['Operation'].isin(selected_operation)]
     if selected_dates:
-        df = df[df['CreationDate'].isin(selected_dates)]
+        df_merged = df_merged[df_merged['CreationDate'].isin(selected_dates)]
 
     # Group by Date to count occurrences of Operation
-    count_by_date = df.groupby('Date').size().reset_index(name='Count of Operations')
+    count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by CreationDate
     st.subheader("Count of Operations by Creation Date")
@@ -75,7 +75,7 @@ def display_main_content():
     st.plotly_chart(fig_bar, use_container_width=True)
 
     # Group by Operation to sum RecordType
-    record_type_summary = df.groupby('Operation')['RecordType'].sum().reset_index()
+    record_type_summary = df_merged.groupby('Operation')['RecordType'].sum().reset_index()
 
     # Plotting pie chart for Sum of RecordType by Operation
     st.subheader("Sum of RecordType by Operation")
