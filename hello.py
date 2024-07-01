@@ -104,13 +104,13 @@ def display_another_page():
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
 
     # Group by Fullname to sum RecordType
-    record_type_by_fullname = df.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
+    Count_opeation_by_fullname = df.groupby('Fullname')['Operation'].count().reset_index(name='count of operation')
 
     # Plotting bar chart for Sum of RecordType by Fullname
-    fig_bar_fullname = px.bar(record_type_by_fullname, x='Fullname', y='Sum of RecordType', text='Sum of RecordType',
-                              template='seaborn', title='Sum of RecordType by Fullname')
+    fig_bar_fullname = px.bar(Count_opeation_by_fullname, x='Fullname', y='count of operation', text='count of operation',
+                              template='seaborn', title='count of operation by Fullname')
     fig_bar_fullname.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='count of operation')
     st.plotly_chart(fig_bar_fullname, use_container_width=True)
 
     # Group by Operation to sum RecordType
