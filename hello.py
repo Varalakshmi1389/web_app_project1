@@ -2,7 +2,7 @@ import streamlit as st
 
 # Page configuration should be set before any Streamlit elements are created
 st.set_page_config(
-    page_title="Operations",
+    page_title="Operations1",
     page_icon="🧊",
     layout="wide",
     initial_sidebar_state="expanded",
