@@ -87,7 +87,7 @@ def display_main_content():
 def display_another_page():
     st.title("Page2")
     
- # Load the primary CSV file
+    # Load the primary CSV file
     try:
         df = pd.read_csv("inputfile.csv")
     except FileNotFoundError:
@@ -103,16 +103,25 @@ def display_another_page():
 
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
 
-    # Group by Fullname to count occurrences of Operation
-    RecordType_by_fullname = df.groupby('Fullname').size().reset_index(name='sum of RecordType')
+    # Group by Fullname to sum RecordType
+    record_type_by_fullname = df.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
 
-    # Plotting bar chart for Count of Operations by Fullname
-    
-    fig_bar_fullname = px.bar(RecordType_by_fullname, x='Fullname', y='sum of RecordType', text='sum of RecordType',
-                              template='seaborn', title='sum of RecordType by Fullname')
+    # Plotting bar chart for Sum of RecordType by Fullname
+    fig_bar_fullname = px.bar(record_type_by_fullname, x='Fullname', y='Sum of RecordType', text='Sum of RecordType',
+                              template='seaborn', title='Sum of RecordType by Fullname')
     fig_bar_fullname.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
     st.plotly_chart(fig_bar_fullname, use_container_width=True)
+
+    # Group by Operation to sum RecordType
+    record_type_summary = df.groupby('Operation')['RecordType'].sum().reset_index()
+
+    # Plotting pie chart for Sum of RecordType by Operation
+    st.subheader("Sum of RecordType by Operation")
+    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
+                     title='Sum of RecordType by Operation', hole=0.5)
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
