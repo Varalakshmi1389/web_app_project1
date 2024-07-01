@@ -29,18 +29,19 @@ def display_main_content():
         st.error("The file 'inputfile.csv' was not found.")
         return
 
-    # Load and merge the secondary CSV file
+    # Load and join the secondary CSV file
     try:
         df1 = pd.read_csv("inputfile1.csv")
         st.write("Secondary file loaded successfully.")
         st.write(df1.head())
-        df = pd.concat([df, df1], ignore_index=True)
-        st.write("Files merged successfully.")
+        # Perform an inner join on 'UserId' (assuming 'UserId' is the common key)
+        df = pd.merge(df, df1, on='UserId', how='inner')
+        st.write("Files joined successfully.")
         st.write(df.head())
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
 
-    st.write("Merged DataFrame:")
+    st.write("Joined DataFrame:")
     st.write(df.head())
 
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
