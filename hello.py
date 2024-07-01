@@ -48,5 +48,6 @@ else:
             # Redirect to another page after successful login
             st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
             st.experimental_rerun()  # Rerun the script to reflect the new state
-        else:
+    else:
+        st.error("Incorrect User ID or Password. Please try again.")
        
