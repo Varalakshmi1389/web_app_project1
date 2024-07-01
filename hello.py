@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -23,48 +24,33 @@ def display_main_content():
     # Load the primary CSV file
     try:
         df = pd.read_csv("inputfile.csv")
-        st.write("Primary file loaded successfully.")
-        st.write(df.head())
     except FileNotFoundError:
         st.error("The file 'inputfile.csv' was not found.")
         return
 
-    # Load and join the secondary CSV file
+    # Load and merge the secondary CSV file
     try:
         df1 = pd.read_csv("inputfile1.csv")
-        st.write("Secondary file loaded successfully.")
-        st.write(df1.head())
-        # Check column names
-        st.write("Column names of df:")
-        st.write(df.columns)
-        st.write("Column names of df1:")
-        st.write(df1.columns)
-        
-        # Perform an inner join on 'UserId' and 'Userid'
-        df = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
-        st.write("Files joined successfully.")
-        st.write(df.head())
+        df = pd.concat([df, df1])
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
 
-    st.write("Joined DataFrame:")
-    st.write(df.head())
+    st.write(df)
 
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
     df1 = df.copy()
 
     # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df1.groupby(['Fullname','UserId','Date', 'Operation']).size().reset_index(name='Count of Operations')
+    summary_df = df1.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
 
-    final_summary_df = summary_df.groupby('Fullname').agg({
-        'UserId':'first',
+    final_summary_df = summary_df.groupby('UserId').agg({
         'Date': 'first',
         'Operation': 'first',
         'Count of Operations': 'sum'
     }).reset_index()
 
-    st.subheader("Operation Count by Fullname,UserId, Date, and Operation")
-    st.table(final_summary_df[['Fullname','UserId', 'Date', 'Operation', 'Count of Operations']])
+    st.subheader("Operation Count by UserId, Date, and Operation")
+    st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
 
     # Sidebar filters for Operation and CreationDate
     st.sidebar.header("Filters")
@@ -98,6 +84,12 @@ def display_main_content():
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
+# Function to display another page content
+def display_another_page():
+    st.title("Another Page")
+    st.write("This is another page content.")
+    # Add more content for the new page as needed
+
 # Initialize page state
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
@@ -107,8 +99,21 @@ query_params = st.experimental_get_query_params()
 if query_params.get('logged_in') == ['true']:
     st.session_state.loggedin = True
 
+# Navigation links in the sidebar
+st.sidebar.header("Navigation")
+if st.sidebar.button("Main Page"):
+    st.experimental_set_query_params(logged_in=True, page="main")
+    st.experimental_rerun()
+if st.sidebar.button("Another Page"):
+    st.experimental_set_query_params(logged_in=True, page="another")
+    st.experimental_rerun()
+
+# Check if logged in and display content accordingly
 if st.session_state.loggedin:
-    display_main_content()
+    if query_params.get('page', ['main'])[0] == 'main':
+        display_main_content()
+    elif query_params.get('page', ['main'])[0] == 'another':
+        display_another_page()
 else:
     st.sidebar.header("Login")
 
@@ -125,7 +130,7 @@ else:
             st.success("Logged in successfully!")
             st.session_state.loggedin = True
             # Redirect to another page after successful login
-            st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
+            st.experimental_set_query_params(logged_in=True, page="main")  # Set query params to indicate logged in and default page
             st.experimental_rerun()  # Rerun the script to reflect the new state
         else:
             st.error("Incorrect User ID or Password. Please try again.")
