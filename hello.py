@@ -30,10 +30,10 @@ def display_main_content():
 
     # Load and merge the secondary CSV file
     try:
-        df1 = pd.read_csv("input1.csv")
+        df1 = pd.read_csv("inputfile1.csv")
         df = pd.concat([df, df1])
     except FileNotFoundError:
-        st.warning("The file 'input1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
 
     st.write(df)
 
