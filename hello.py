@@ -54,16 +54,17 @@ def display_main_content():
     df1_copy = df_merged.copy()
 
     # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df1_copy.groupby(['UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+    summary_df = df1_copy.groupby(['Fullname','UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
 
-    final_summary_df = summary_df.groupby('UserId').agg({
+    final_summary_df = summary_df.groupby('Fullname').agg({
+        'UserId':'first',
         'Date': 'first',
         'Operation': 'first',
         'Count of Operations': 'sum'
     }).reset_index()
 
     st.subheader("Operation Count by UserId, Date, and Operation")
-    st.table(final_summary_df[['UserId', 'Date', 'Operation', 'Count of Operations']])
+    st.table(final_summary_df[['Fullname','UserId', 'Date', 'Operation', 'Count of Operations']])
 
     # Sidebar filters for Operation and CreationDate
     st.sidebar.header("Filters")
@@ -100,7 +101,7 @@ def display_main_content():
 # Function to display another page content
 def display_another_page():
     st.title("Page 2")
-    st.write("This is another page content.")
+    
 
     # Load the primary CSV file
     try:
