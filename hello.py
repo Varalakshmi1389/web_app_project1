@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -20,11 +21,19 @@ st.set_page_config(
 
 # Function to display the main content after login
 def display_main_content():
-    df = pd.read_csv("inputfile.csv")
-    df1 = pd.read_csv("input1.csv")
-    
-    # Assuming the files have the same structure and we want to concatenate them
-    df = pd.concat([df, df1])
+    # Load the primary CSV file
+    try:
+        df = pd.read_csv("inputfile.csv")
+    except FileNotFoundError:
+        st.error("The file 'inputfile.csv' was not found.")
+        return
+
+    # Load and merge the secondary CSV file
+    try:
+        df1 = pd.read_csv("input1.csv")
+        df = pd.concat([df, df1])
+    except FileNotFoundError:
+        st.warning("The file 'input1.csv' was not found. Proceeding with only 'inputfile.csv'.")
 
     st.write(df)
 
