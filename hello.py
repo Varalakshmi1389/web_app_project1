@@ -86,7 +86,7 @@ def display_main_content():
 
 # Function to display another page content
 def display_another_page():
-    st.title("Another Page")
+    st.title("Page2")
     st.write("This is another page content.")
     # Add more content for the new page as needed
 
@@ -101,10 +101,10 @@ if query_params.get('logged_in') == ['true']:
 
 # Navigation links in the sidebar
 st.sidebar.header("Navigation")
-if st.sidebar.button("Main Page"):
+if st.sidebar.button("Page1"):
     st.experimental_set_query_params(logged_in=True, page="main")
     st.experimental_rerun()
-if st.sidebar.button("Another Page"):
+if st.sidebar.button("Page2"):
     st.experimental_set_query_params(logged_in=True, page="another")
     st.experimental_rerun()
 
