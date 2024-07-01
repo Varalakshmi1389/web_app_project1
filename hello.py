@@ -27,12 +27,25 @@ def display_main_content():
         st.error("The file 'inputfile.csv' was not found.")
         return
 
-    # Load the secondary CSV file and perform a left join
+    # Load the secondary CSV file
     try:
         df1 = pd.read_csv("inputfile1.csv")
-        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
+
+    # Check if the necessary columns exist
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        return
+    if not df1.empty and 'Uderid' not in df1.columns:
+        st.error("The column 'Uderid' is missing from 'inputfile1.csv'.")
+        return
+
+    # Perform a left join if the secondary DataFrame is not empty
+    if not df1.empty:
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Uderid', how='left')
+    else:
         df_merged = df
 
     st.write(df_merged)
@@ -86,9 +99,52 @@ def display_main_content():
 
 # Function to display another page content
 def display_another_page():
-    st.title("Page2")
+    st.title("Page 2")
     st.write("This is another page content.")
-    # Add more content for the new page as needed
+
+    # Load the primary CSV file
+    try:
+        df = pd.read_csv("inputfile.csv")
+    except FileNotFoundError:
+        st.error("The file 'inputfile.csv' was not found.")
+        return
+
+    # Load the secondary CSV file
+    try:
+        df1 = pd.read_csv("inputfile1.csv")
+    except FileNotFoundError:
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
+
+    # Check if the necessary columns exist
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        return
+    if not df1.empty and 'Uderid' not in df1.columns:
+        st.error("The column 'Uderid' is missing from 'inputfile1.csv'.")
+        return
+
+    # Perform a left join if the secondary DataFrame is not empty
+    if not df1.empty:
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Uderid', how='left')
+    else:
+        df_merged = df
+
+    # Check if the 'Full Name' column exists
+    if 'Full Name' not in df_merged.columns:
+        st.error("The column 'Full Name' is missing from the merged DataFrame.")
+        return
+
+    # Group by Full Name to count occurrences of Operation
+    count_by_full_name = df_merged.groupby('Full Name').size().reset_index(name='Count of Operations')
+
+    # Plotting bar chart for Count of Operations by Full Name
+    st.subheader("Count of Operations by Full Name")
+    fig_bar_full_name = px.bar(count_by_full_name, x='Full Name', y='Count of Operations', text='Count of Operations',
+                               template='seaborn', title='Count of Operations by Full Name')
+    fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_bar_full_name.update_layout(xaxis_title='Full Name', yaxis_title='Count of Operations')
+    st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
@@ -103,10 +159,10 @@ if query_params.get('logged_in') == ['true']:
 if st.session_state.loggedin:
     # Navigation links in the sidebar
     st.sidebar.header("Navigation")
-    if st.sidebar.button("Page1"):
+    if st.sidebar.button("Page 1"):
         st.experimental_set_query_params(logged_in=True, page="main")
         st.experimental_rerun()
-    if st.sidebar.button("Page2"):
+    if st.sidebar.button("Page 2"):
         st.experimental_set_query_params(logged_in=True, page="another")
         st.experimental_rerun()
 
