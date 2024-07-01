@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -86,42 +87,8 @@ def display_main_content():
 # Function to display another page content
 def display_another_page():
     st.title("Page2")
-    
-    # Load the primary CSV file
-    try:
-        df = pd.read_csv("inputfile.csv")
-    except FileNotFoundError:
-        st.error("The file 'inputfile.csv' was not found.")
-        return
-
-    # Load and merge the secondary CSV file
-    try:
-        df1 = pd.read_csv("inputfile1.csv")
-        df = pd.concat([df, df1])
-    except FileNotFoundError:
-        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
-
-    df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
-
-    # Group by Fullname to sum RecordType
-    Count_opeation_by_fullname = df.groupby('Fullname')['Operation'].count().reset_index(name='count of operation')
-
-    # Plotting bar chart for Sum of RecordType by Fullname
-    fig_bar_fullname = px.bar(Count_opeation_by_fullname, x='Fullname', y='count of operation', text='count of operation',
-                              template='seaborn', title='count of operation by Fullname')
-    fig_bar_fullname.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    fig_bar_fullname.update_layout(xaxis_title='Fullname', yaxis_title='count of operation')
-    st.plotly_chart(fig_bar_fullname, use_container_width=True)
-
-    # Group by Operation to sum RecordType
-    record_type_summary = df.groupby('Operation')['RecordType'].sum().reset_index()
-
-    # Plotting pie chart for Sum of RecordType by Operation
-    st.subheader("Sum of RecordType by Operation")
-    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
-                     title='Sum of RecordType by Operation', hole=0.5)
-    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig_pie, use_container_width=True)
+    st.write("This is another page content.")
+    # Add more content for the new page as needed
 
 # Initialize page state
 if "loggedin" not in st.session_state:
