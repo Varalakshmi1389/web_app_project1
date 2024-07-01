@@ -99,7 +99,7 @@ def display_another_page(df_merged):
     st.subheader("Matrix Visualization: UserId vs Operation")
     
     # Create pivot table for heatmap
-    pivot_table = df_filtered.pivot_table(index='Operation', columns='UserId', values='Count of Operations', aggfunc=np.sum, fill_value=0)
+    pivot_table = df_filtered.pivot_table(index='Operation', columns='Userid', values='Count of Operations', aggfunc=np.sum, fill_value=0)
 
     # Create heatmap using plotly
     fig_heatmap = go.Figure(data=go.Heatmap(
