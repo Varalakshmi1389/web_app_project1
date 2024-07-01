@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import os
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -24,6 +23,8 @@ def display_main_content():
     # Load the primary CSV file
     try:
         df = pd.read_csv("inputfile.csv")
+        st.write("Primary file loaded successfully.")
+        st.write(df.head())
     except FileNotFoundError:
         st.error("The file 'inputfile.csv' was not found.")
         return
@@ -31,11 +32,16 @@ def display_main_content():
     # Load and merge the secondary CSV file
     try:
         df1 = pd.read_csv("inputfile1.csv")
-        df = pd.concat([df, df1])
+        st.write("Secondary file loaded successfully.")
+        st.write(df1.head())
+        df = pd.concat([df, df1], ignore_index=True)
+        st.write("Files merged successfully.")
+        st.write(df.head())
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
 
-    st.write(df)
+    st.write("Merged DataFrame:")
+    st.write(df.head())
 
     df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
     df1 = df.copy()
