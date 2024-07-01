@@ -130,13 +130,13 @@ def display_another_page():
     else:
         df_merged = df
 
-    # Check if the 'Full Name' column exists
-    if 'Full Name' not in df_merged.columns:
-        st.error("The column 'Full Name' is missing from the merged DataFrame.")
+    # Check if the 'Fullname' column exists
+    if 'Fullname' not in df_merged.columns:
+        st.error("The column 'Fullname' is missing from the merged DataFrame.")
         return
 
     # Group by Full Name to count occurrences of Operation
-    count_by_full_name = df_merged.groupby('Full Name').size().reset_index(name='Count of Operations')
+    count_by_full_name = df_merged.groupby('Fullname').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by Full Name
 
