@@ -84,12 +84,6 @@ def display_main_content():
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
-# Function to display another page content
-def display_another_page():
-    st.title("Page2")
-    st.write("This is another page content.")
-    # Add more content for the new page as needed
-
 # Initialize page state
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
@@ -99,21 +93,9 @@ query_params = st.experimental_get_query_params()
 if query_params.get('logged_in') == ['true']:
     st.session_state.loggedin = True
 
-# Navigation links in the sidebar
-st.sidebar.header("Navigation")
-if st.sidebar.button("Page1"):
-    st.experimental_set_query_params(logged_in=True, page="main")
-    st.experimental_rerun()
-if st.sidebar.button("Page2"):
-    st.experimental_set_query_params(logged_in=True, page="another")
-    st.experimental_rerun()
-
 # Check if logged in and display content accordingly
 if st.session_state.loggedin:
-    if query_params.get('page', ['main'])[0] == 'main':
-        display_main_content()
-    elif query_params.get('page', ['main'])[0] == 'another':
-        display_another_page()
+    display_main_content()
 else:
     st.sidebar.header("Login")
 
@@ -130,7 +112,7 @@ else:
             st.success("Logged in successfully!")
             st.session_state.loggedin = True
             # Redirect to another page after successful login
-            st.experimental_set_query_params(logged_in=True, page="main")  # Set query params to indicate logged in and default page
+            st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
             st.experimental_rerun()  # Rerun the script to reflect the new state
         else:
             st.error("Incorrect User ID or Password. Please try again.")
