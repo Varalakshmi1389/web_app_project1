@@ -41,7 +41,7 @@ def display_main_content():
         st.write(df1.columns)
         
         # Perform an inner join on 'UserId' and 'Userid'
-        df = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='inner')
+        df = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
         st.write("Files joined successfully.")
         st.write(df.head())
     except FileNotFoundError:
