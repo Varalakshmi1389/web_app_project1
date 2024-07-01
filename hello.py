@@ -54,18 +54,40 @@ def display_main_content():
     df1_copy = df_merged.copy()
 
     # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df1_copy.groupby(['Fullname','UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+   
+# Filters
+fullname_filter = st.sidebar.multiselect('Select Fullname', options=df1_copy['Fullname'].unique(), default=df1_copy['Fullname'].unique())
+userid_filter = st.sidebar.multiselect('Select UserId', options=df1_copy['UserId'].unique(), default=df1_copy['UserId'].unique())
+date_filter = st.sidebar.date_input('Select Date Range', [])
+operation_filter = st.sidebar.multiselect('Select Operation', options=df1_copy['Operation'].unique(), default=df1_copy['Operation'].unique())
 
-    final_summary_df = summary_df.groupby('Fullname').agg({
-        'UserId':'first',
-        'Date': 'first',
-        'Operation': 'first',
-        'Count of Operations': 'sum'
-    }).reset_index()
+# Apply filters
+filtered_df = df1_copy[
+    (df1_copy['Fullname'].isin(fullname_filter)) &
+    (df1_copy['UserId'].isin(userid_filter)) &
+    (df1_copy['Operation'].isin(operation_filter))
+]
 
-    st.subheader("Operation Count by UserId, Date, and Operation")
-    st.table(final_summary_df[['Fullname','UserId', 'Date', 'Operation', 'Count of Operations']])
+if date_filter:
+    start_date, end_date = date_filter if len(date_filter) == 2 else (date_filter[0], date_filter[0])
+    filtered_df = filtered_df[
+        (pd.to_datetime(filtered_df['Date']) >= pd.to_datetime(start_date)) &
+        (pd.to_datetime(filtered_df['Date']) <= pd.to_datetime(end_date))
+    ]
 
+# Group and aggregate data
+summary_df = filtered_df.groupby(['Fullname', 'UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+
+final_summary_df = summary_df.groupby('Fullname').agg({
+    'UserId': 'first',
+    'Date': 'first',
+    'Operation': 'first',
+    'Count of Operations': 'sum'
+}).reset_index()
+
+# Display table
+st.subheader("Operation Count by UserId, Date, and Operation")
+st.table(final_summary_df[['Fullname', 'UserId', 'Date', 'Operation', 'Count of Operations']])
     # Sidebar filters for Operation and CreationDate
     st.sidebar.header("Filters")
     selected_operation = st.sidebar.multiselect("Select Operation(s)", df_merged["Operation"].unique())
