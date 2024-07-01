@@ -120,7 +120,7 @@ def display_another_page():
     if 'UserId' not in df.columns:
         st.error("The column 'UserId' is missing from 'inputfile.csv'.")
         return
-    if not df1.empty and 'Uderid' not in df1.columns:
+    if not df1.empty and 'Userid' not in df1.columns:
         st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
         return
 
