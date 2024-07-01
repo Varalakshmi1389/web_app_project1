@@ -1,14 +1,4 @@
 import streamlit as st
-import pandas as pd
-
-CORRECT_USER_ID = "Admin"
-CORRECT_PASSWORD = "123"
-
-# Initialize page state
-page = st.empty()
-
-if "loggedin" not in st.session_state:
-    st.session_state.loggedin = False
 
 # Page configuration should be set before any Streamlit elements are created
 st.set_page_config(
@@ -23,12 +13,18 @@ st.set_page_config(
     }
 )
 
+CORRECT_USER_ID = "Admin"
+CORRECT_PASSWORD = "123"
+
+# Initialize page state
+if "loggedin" not in st.session_state:
+    st.session_state.loggedin = False
+
 # Check if logged_in query parameter is set to True
 query_params = st.experimental_get_query_params()
 if query_params.get('logged_in') == ['true']:
     st.title("Welcome to the Application!")
     # Add your main application content here
-    # For example:
     st.write("You are now logged in.")
 else:
     st.sidebar.header("Login")
@@ -48,6 +44,5 @@ else:
             # Redirect to another page after successful login
             st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
             st.experimental_rerun()  # Rerun the script to reflect the new state
-    else:
-        st.error("Incorrect User ID or Password. Please try again.")
-       
+        else:
+            st.error("Incorrect User ID or Password. Please try again.")
