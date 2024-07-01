@@ -19,52 +19,8 @@ st.set_page_config(
 )
 
 # Function to display the main content after login
-def display_main_content():
-    # Load the primary CSV file
-    try:
-        df = pd.read_csv("inputfile.csv")
-    except FileNotFoundError:
-        st.error("The file 'inputfile.csv' was not found.")
-        return
-
-    # Load the secondary CSV file
-    try:
-        df1 = pd.read_csv("inputfile1.csv")
-    except FileNotFoundError:
-        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
-        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
-
-    # Check if the necessary columns exist
-    if 'UserId' not in df.columns:
-        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
-        return
-    if not df1.empty and 'Userid' not in df1.columns:
-        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
-        return
-
-    # Perform a left join if the secondary DataFrame is not empty
-    if not df1.empty:
-        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
-    else:
-        df_merged = df
-
-    st.write(df_merged)
-
-    df_merged['Date'] = pd.to_datetime(df_merged['CreationDate']).dt.date
-    df1_copy = df_merged.copy()
-
-    # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df1_copy.groupby(['Fullname','UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
-
-    final_summary_df = summary_df.groupby('Fullname').agg({
-        'UserId':'first',
-        'Date': 'first',
-        'Operation': 'first',
-        'Count of Operations': 'sum'
-    }).reset_index()
-
+def display_main_content(df_merged):
     st.subheader("Operation Count by UserId, Date, and Operation")
-    st.table(final_summary_df[['Fullname','UserId', 'Date', 'Operation', 'Count of Operations']])
 
     # Sidebar filters for Operation and CreationDate
     st.sidebar.header("Filters")
@@ -73,23 +29,37 @@ def display_main_content():
 
     # Apply filters to create filtered DataFrame
     if selected_operation:
-        df_merged = df_merged[df_merged['Operation'].isin(selected_operation)]
+        df_filtered = df_merged[df_merged['Operation'].isin(selected_operation)]
+    else:
+        df_filtered = df_merged.copy()
     if selected_dates:
-        df_merged = df_merged[df_merged['CreationDate'].isin(selected_dates)]
+        df_filtered = df_filtered[df_filtered['CreationDate'].isin(selected_dates)]
+
+    # Group by UserId, Date, and Operation to count occurrences
+    summary_df = df_filtered.groupby(['Fullname','UserId', 'CreationDate', 'Operation']).size().reset_index(name='Count of Operations')
+
+    final_summary_df = summary_df.groupby('Fullname').agg({
+        'UserId':'first',
+        'CreationDate': 'first',
+        'Operation': 'first',
+        'Count of Operations': 'sum'
+    }).reset_index()
+
+    st.table(final_summary_df[['Fullname','UserId', 'CreationDate', 'Operation', 'Count of Operations']])
 
     # Group by Date to count occurrences of Operation
-    count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
+    count_by_date = df_filtered.groupby('CreationDate').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by CreationDate
     st.subheader("Count of Operations by Creation Date")
-    fig_bar = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
+    fig_bar = px.bar(count_by_date, x='CreationDate', y='Count of Operations', text='Count of Operations',
                      template='seaborn', title='Count of Operations by Creation Date')
     fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar, use_container_width=True)
 
     # Group by Operation to sum RecordType
-    record_type_summary = df_merged.groupby('Operation')['RecordType'].sum().reset_index()
+    record_type_summary = df_filtered.groupby('Operation')['RecordType'].sum().reset_index()
 
     # Plotting pie chart for Sum of RecordType by Operation
     st.subheader("Sum of RecordType by Operation")
@@ -99,58 +69,24 @@ def display_main_content():
     st.plotly_chart(fig_pie, use_container_width=True)
 
 # Function to display another page content
-def display_another_page():
+def display_another_page(df_merged):
     st.title("Page 2")
-    
-
-    # Load the primary CSV file
-    try:
-        df = pd.read_csv("inputfile.csv")
-    except FileNotFoundError:
-        st.error("The file 'inputfile.csv' was not found.")
-        return
-
-    # Load the secondary CSV file
-    try:
-        df1 = pd.read_csv("inputfile1.csv")
-    except FileNotFoundError:
-        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
-        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
-
-    # Check if the necessary columns exist
-    if 'UserId' not in df.columns:
-        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
-        return
-    if not df1.empty and 'Userid' not in df1.columns:
-        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
-        return
-
-    # Perform a left join if the secondary DataFrame is not empty
-    if not df1.empty:
-        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
-    else:
-        df_merged = df
-
-    # Check if the 'Full Name' column exists
-    if 'Fullname' not in df_merged.columns:
-        st.error("The column 'Full Name' is missing from the merged DataFrame.")
-        return
 
     # Sidebar filter for Full Name
-    
+    st.sidebar.header("Filters")
     selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
 
     # Apply Full Name filter to the DataFrame
     if selected_full_names:
         df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
     else:
-        df_filtered = df_merged
+        df_filtered = df_merged.copy()
 
     # Group by Full Name to count occurrences of Operation
     count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by Full Name
-
+    st.subheader("Count of Operations by Full Name")
     fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations',
                                template='seaborn', title='Count of Operations by Full Name')
     fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
@@ -177,10 +113,42 @@ if st.session_state.loggedin:
         st.experimental_set_query_params(logged_in=True, page="another")
         st.experimental_rerun()
 
+    # Load the primary CSV file
+    try:
+        df = pd.read_csv("inputfile.csv")
+    except FileNotFoundError:
+        st.error("The file 'inputfile.csv' was not found.")
+        st.stop()
+
+    # Load the secondary CSV file
+    try:
+        df1 = pd.read_csv("inputfile1.csv")
+    except FileNotFoundError:
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
+
+    # Check if the necessary columns exist
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        st.stop()
+    if not df1.empty and 'Userid' not in df1.columns:
+        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
+        st.stop()
+
+    # Perform a left join if the secondary DataFrame is not empty
+    if not df1.empty:
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
+    else:
+        df_merged = df
+
+    if 'Fullname' not in df_merged.columns:
+        st.error("The column 'Fullname' is missing from the merged DataFrame.")
+        st.stop()
+
     if query_params.get('page', ['main'])[0] == 'main':
-        display_main_content()
+        display_main_content(df_merged)
     elif query_params.get('page', ['main'])[0] == 'another':
-        display_another_page()
+        display_another_page(df_merged)
 else:
     st.sidebar.header("Login")
 
