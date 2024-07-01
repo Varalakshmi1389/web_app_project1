@@ -54,71 +54,49 @@ def display_main_content():
     df1_copy = df_merged.copy()
 
     # Group by UserId, Date, and Operation to count occurrences
-   
-# Filters
-fullname_filter = st.sidebar.multiselect('Select Fullname', options=df1_copy['Fullname'].unique(), default=df1_copy['Fullname'].unique())
-userid_filter = st.sidebar.multiselect('Select UserId', options=df1_copy['UserId'].unique(), default=df1_copy['UserId'].unique())
-date_filter = st.sidebar.date_input('Select Date Range', [])
-operation_filter = st.sidebar.multiselect('Select Operation', options=df1_copy['Operation'].unique(), default=df1_copy['Operation'].unique())
+    summary_df = df1_copy.groupby(['Fullname','UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
 
-# Apply filters
-filtered_df = df1_copy[
-    (df1_copy['Fullname'].isin(fullname_filter)) &
-    (df1_copy['UserId'].isin(userid_filter)) &
-    (df1_copy['Operation'].isin(operation_filter))
-]
+    final_summary_df = summary_df.groupby('Fullname').agg({
+        'UserId':'first',
+        'Date': 'first',
+        'Operation': 'first',
+        'Count of Operations': 'sum'
+    }).reset_index()
 
-if date_filter:
-    start_date, end_date = date_filter if len(date_filter) == 2 else (date_filter[0], date_filter[0])
-    filtered_df = filtered_df[
-        (pd.to_datetime(filtered_df['Date']) >= pd.to_datetime(start_date)) &
-        (pd.to_datetime(filtered_df['Date']) <= pd.to_datetime(end_date))
-    ]
+    st.subheader("Operation Count by UserId, Date, and Operation")
+    st.table(final_summary_df[['Fullname','UserId', 'Date', 'Operation', 'Count of Operations']])
 
-# Group and aggregate data
-summary_df = filtered_df.groupby(['Fullname', 'UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
-
-final_summary_df = summary_df.groupby('Fullname').agg({
-    'UserId': 'first',
-    'Date': 'first',
-    'Operation': 'first',
-    'Count of Operations': 'sum'
-}).reset_index()
-
-# Display table
-st.subheader("Operation Count by UserId, Date, and Operation")
-st.table(final_summary_df[['Fullname', 'UserId', 'Date', 'Operation', 'Count of Operations']])
     # Sidebar filters for Operation and CreationDate
-st.sidebar.header("Filters")
-selected_operation = st.sidebar.multiselect("Select Operation(s)", df_merged["Operation"].unique())
-selected_dates = st.sidebar.multiselect("Select Date(s)", df_merged["CreationDate"].unique())
+    st.sidebar.header("Filters")
+    selected_operation = st.sidebar.multiselect("Select Operation(s)", df_merged["Operation"].unique())
+    selected_dates = st.sidebar.multiselect("Select Date(s)", df_merged["CreationDate"].unique())
 
     # Apply filters to create filtered DataFrame
-if selected_operation:
-    df_merged = df_merged[df_merged['Operation'].isin(selected_operation)]
-if selected_dates:
-    df_merged = df_merged[df_merged['CreationDate'].isin(selected_dates)]
+    if selected_operation:
+        df_merged = df_merged[df_merged['Operation'].isin(selected_operation)]
+    if selected_dates:
+        df_merged = df_merged[df_merged['CreationDate'].isin(selected_dates)]
 
     # Group by Date to count occurrences of Operation
-count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
+    count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
 
     # Plotting bar chart for Count of Operations by CreationDate
-st.subheader("Count of Operations by Creation Date")
-fig_bar = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
-                    template='seaborn', title='Count of Operations by Creation Date')
-fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
-st.plotly_chart(fig_bar, use_container_width=True)
+    st.subheader("Count of Operations by Creation Date")
+    fig_bar = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations',
+                     template='seaborn', title='Count of Operations by Creation Date')
+    fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
+    st.plotly_chart(fig_bar, use_container_width=True)
 
     # Group by Operation to sum RecordType
-record_type_summary = df_merged.groupby('Operation')['RecordType'].sum().reset_index()
+    record_type_summary = df_merged.groupby('Operation')['RecordType'].sum().reset_index()
 
     # Plotting pie chart for Sum of RecordType by Operation
-st.subheader("Sum of RecordType by Operation")
-fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
-                    title='Sum of RecordType by Operation', hole=0.5)
-fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-st.plotly_chart(fig_pie, use_container_width=True)
+    st.subheader("Sum of RecordType by Operation")
+    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
+                     title='Sum of RecordType by Operation', hole=0.5)
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
 
 # Function to display another page content
 def display_another_page():
