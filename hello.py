@@ -30,7 +30,7 @@ def display_main_content():
     # Load the secondary CSV file and perform a left join
     try:
         df1 = pd.read_csv("inputfile1.csv")
-        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Uderid', how='left')
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
         df_merged = df
