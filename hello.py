@@ -19,7 +19,6 @@ st.set_page_config(
     }
 )
 
-# Function to display the main content after login
 def display_main_content():
     # Load the primary CSV file
     try:
@@ -28,12 +27,13 @@ def display_main_content():
         st.error("The file 'inputfile.csv' was not found.")
         return
 
-    # Load and merge the secondary CSV file
+    # Load the secondary CSV file and perform a left join
     try:
         df1 = pd.read_csv("inputfile1.csv")
-        df = pd.concat([df, df1])
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Uderid', how='left')
     except FileNotFoundError:
         st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        df_merged = df
 
     st.write(df)
 
