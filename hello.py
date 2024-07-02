@@ -23,9 +23,13 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .sidebar-content .full-width-container .sidebar .block-container.stButton-pressed a,
-    .sidebar-content .block-container.stButton-pressed a,
-    .sidebar-content .block-container.stButton-pressed button {
+    /* Increased specificity targeting inner element and pressed + active states (optional) */
+    .sidebar-content .full-width-container .sidebar .block-container.stButton-pressed > a,
+    .sidebar-content .block-container.stButton-pressed > a,
+    .sidebar-content .block-container.stButton-pressed > button,
+    .sidebar-content .full-width-container .sidebar .block-container.stButton-pressed.stActive a,
+    .sidebar-content .block-container.stButton-pressed.stActive a,
+    .sidebar-content .block-container.stButton-pressed.stActive button {
         background-color: blue !important;
         color: white !important;
     }
@@ -38,7 +42,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 
 # Function to display the main content after login
 def display_main_content(df_merged):
