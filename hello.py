@@ -111,11 +111,7 @@ def display_another_page(df_merged):
     fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
-    # Ensure 'Count of Operations' column exists
-    if 'Count of Operations' not in df_filtered.columns:
-        st.error("The column 'Count of Operations' is missing from the filtered DataFrame.")
-        return
-
+   
 # Initialize page state
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
