@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
 
