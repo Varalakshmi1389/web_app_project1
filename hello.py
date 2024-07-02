@@ -23,9 +23,9 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    .sidebar-content .full-width-container .sidebar .block-container a,
-    .sidebar-content .block-container a,
-    .sidebar-content .block-container button {
+    .sidebar-content .full-width-container .sidebar .block-container.stButton-pressed a,
+    .sidebar-content .block-container.stButton-pressed a,
+    .sidebar-content .block-container.stButton-pressed button {
         background-color: blue !important;
         color: white !important;
     }
