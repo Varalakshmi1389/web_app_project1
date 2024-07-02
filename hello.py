@@ -1,8 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
-import numpy as np
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
@@ -65,7 +63,7 @@ def display_main_content(df_merged):
 
     # Plotting pie chart for Sum of RecordType by Operation
     st.subheader("Sum of RecordType by Operation")
-    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
+    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation',
                      title='Sum of RecordType by Operation', hole=0.5)
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
@@ -109,38 +107,35 @@ query_params = st.experimental_get_query_params()
 if query_params.get('logged_in') == ['true']:
     st.session_state.loggedin = True
 
-  if st.session_state.loggedin:
-        # Navigation links in the sidebar
-        st.sidebar.header("Navigation")
-
-        # CSS style for sidebar buttons
-        st.markdown(
-            """
-            <style>
-            .sidebar-content .block-container.stButton-pressed > button {
-                background-color: blue !important;
-                color: white !important;
-            }
-            .sidebar-content .block-container a:hover,
-            .sidebar-content .block-container button:hover {
-                background-color: darkblue !important;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # Handle navigation buttons
-        if st.sidebar.button("Page 1"):
-            st.experimental_set_query_params(logged_in=True, page="main")
-            st.experimental_rerun()
-        if st.sidebar.button("Page 2"):
-            st.experimental_set_query_params(logged_in=True, page="another")
-            st.experimental_rerun()
+# CSS style for sidebar buttons
+st.markdown(
+    """
+    <style>
+    .sidebar-content .block-container.stButton-pressed > button {
+        background-color: blue !important;
+        color: white !important;
+    }
+    .sidebar-content .block-container a:hover,
+    .sidebar-content .block-container button:hover {
+        background-color: darkblue !important;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 # Run the app
-if __name__ == "__main__":
-    handle_navigation()
+if st.session_state.loggedin:
+    # Navigation links in the sidebar
+    st.sidebar.header("Navigation")
+
+    # Handle navigation buttons
+    if st.sidebar.button("Page 1"):
+        st.experimental_set_query_params(logged_in=True, page="main")
+        st.experimental_rerun()
+    if st.sidebar.button("Page 2"):
+        st.experimental_set_query_params(logged_in=True, page="another")
+        st.experimental_rerun()
 
     # Load the primary CSV file
     try:
