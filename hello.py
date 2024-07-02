@@ -4,6 +4,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 
+
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
 
