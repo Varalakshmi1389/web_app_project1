@@ -1,11 +1,14 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import numpy as np
 
 CORRECT_USER_ID = "Admin"
 CORRECT_PASSWORD = "123"
+
+# Define CSS for active and inactive buttons
+active_button = "background-color: #3498db; color: white; border-radius: 5px; padding: 10px;"
+inactive_button = "background-color: #ecf0f1; color: black; border-radius: 5px; padding: 10px;"
 
 # Page configuration should be set before any Streamlit elements are created
 st.set_page_config(
@@ -60,18 +63,6 @@ def display_main_content(df_merged):
     fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Group by Operation to sum RecordType (just an example, adjust as per your data)
-    # Replace 'RecordType' with an appropriate numeric column if available
-    if 'RecordType' in df_filtered.columns:
-        record_type_summary = df_filtered.groupby('Operation')['RecordType'].sum().reset_index()
-
-        # Plotting pie chart for Sum of RecordType by Operation
-        st.subheader("Sum of RecordType by Operation")
-        fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
-                         title='Sum of RecordType by Operation', hole=0.5)
-        fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-        st.plotly_chart(fig_pie, use_container_width=True)
-
 # Function to display another page content
 def display_another_page(df_merged):
     st.title("Page 2")
@@ -89,14 +80,9 @@ def display_another_page(df_merged):
     # Group by Full Name to count occurrences of Operation
     count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
 
-    # Plotting bar chart for Count of Operations by Full Name
+    # Displaying the table of Count of Operations by Full Name
     st.subheader("Count of Operations by Full Name")
-    fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations',
-                               template='seaborn', title='Count of Operations by Full Name')
-    fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
-    st.plotly_chart(fig_bar_full_name, use_container_width=True)
-
+    st.table(count_by_full_name)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
@@ -111,10 +97,14 @@ if query_params.get('logged_in') == ['true']:
 if st.session_state.loggedin:
     # Navigation links in the sidebar
     st.sidebar.header("Navigation")
-    if st.sidebar.button("Page 1"):
+    page1_clicked = st.sidebar.button("Page 1", key="page1_button")
+    page2_clicked = st.sidebar.button("Page 2", key="page2_button")
+
+    # Update button styles based on click status
+    if page1_clicked:
         st.experimental_set_query_params(logged_in=True, page="main")
         st.experimental_rerun()
-    if st.sidebar.button("Page 2"):
+    if page2_clicked:
         st.experimental_set_query_params(logged_in=True, page="another")
         st.experimental_rerun()
 
