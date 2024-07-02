@@ -45,6 +45,7 @@ def process_data(df):
     return final_summary_df
 
 def display_report1():
+    st.title("Report2")
     # Load the primary CSV file
     try:
         df = pd.read_csv("inputfile.csv")
