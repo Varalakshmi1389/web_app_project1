@@ -60,15 +60,17 @@ def display_main_content(df_merged):
     fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Group by Operation to sum RecordType
-    record_type_summary = df_filtered.groupby('Operation')['RecordType'].sum().reset_index()
+    # Group by Operation to sum RecordType (just an example, adjust as per your data)
+    # Replace 'RecordType' with an appropriate numeric column if available
+    if 'RecordType' in df_filtered.columns:
+        record_type_summary = df_filtered.groupby('Operation')['RecordType'].sum().reset_index()
 
-    # Plotting pie chart for Sum of RecordType by Operation
-    st.subheader("Sum of RecordType by Operation")
-    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
-                     title='Sum of RecordType by Operation', hole=0.5)
-    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig_pie, use_container_width=True)
+        # Plotting pie chart for Sum of RecordType by Operation
+        st.subheader("Sum of RecordType by Operation")
+        fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
+                         title='Sum of RecordType by Operation', hole=0.5)
+        fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_pie, use_container_width=True)
 
 # Function to display another page content
 def display_another_page(df_merged):
@@ -95,16 +97,11 @@ def display_another_page(df_merged):
     fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
-    # Ensure 'Count of Operations' column exists
-    if 'Count of Operations' not in df_filtered.columns:
-        st.error("The column 'Count of Operations' is missing from the filtered DataFrame.")
-        return
-
     # Matrix visualization (Heatmap) for UserId vs Operation
     st.subheader("Matrix Visualization: UserId vs Operation")
 
-    # Create pivot table for heatmap
-    pivot_table = df_filtered.pivot_table(index='Operation', columns='UserId', values='Count of Operations', aggfunc=np.sum, fill_value=0)
+    # For matrix visualization, count occurrences of each Operation by UserId
+    pivot_table = df_filtered.groupby(['UserId', 'Operation']).size().unstack(fill_value=0)
 
     # Create heatmap using plotly
     fig_heatmap = go.Figure(data=go.Heatmap(
@@ -148,52 +145,41 @@ if st.session_state.loggedin:
         st.error("The file 'inputfile.csv' was not found.")
         st.stop()
 
-    # Load the secondary CSV file
+    # Load the secondary CSV file if needed
     try:
         df1 = pd.read_csv("inputfile1.csv")
     except FileNotFoundError:
-        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
-        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding without it.")
+        df1 = pd.DataFrame()
 
-    # Check if the necessary columns exist
-    if 'UserId' not in df.columns:
-        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
-        st.stop()
-    if not df1.empty and 'Userid' not in df1.columns:
-        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
-        st.stop()
-
-    # Perform a left join if the secondary DataFrame is not empty
+    # Merge the DataFrames if secondary DataFrame is present
     if not df1.empty:
         df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
     else:
         df_merged = df
 
+    # Check if necessary columns are present
     if 'Fullname' not in df_merged.columns:
         st.error("The column 'Fullname' is missing from the merged DataFrame.")
         st.stop()
 
+    # Determine which page to display based on query parameter
     if query_params.get('page', ['main'])[0] == 'main':
         display_main_content(df_merged)
     elif query_params.get('page', ['main'])[0] == 'another':
         display_another_page(df_merged)
 else:
+    # Display login form if not logged in
     st.sidebar.header("Login")
-
-    # Create input fields for User ID and Password
     user_id = st.text_input("User ID")
     password = st.text_input("Password", type="password")
-
-    # Add a login button
     login_button = st.button("Login")
 
-    # Check credentials upon login button press
     if login_button:
         if user_id == CORRECT_USER_ID and password == CORRECT_PASSWORD:
             st.success("Logged in successfully!")
             st.session_state.loggedin = True
-            # Redirect to another page after successful login
-            st.experimental_set_query_params(logged_in=True)  # Set query params to indicate logged in
-            st.experimental_rerun()  # Rerun the script to reflect the new state
+            st.experimental_set_query_params(logged_in=True)
+            st.experimental_rerun()
         else:
             st.error("Incorrect User ID or Password. Please try again.")
