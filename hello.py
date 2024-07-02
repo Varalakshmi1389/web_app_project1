@@ -109,16 +109,38 @@ query_params = st.experimental_get_query_params()
 if query_params.get('logged_in') == ['true']:
     st.session_state.loggedin = True
 
-# Check if logged in and display content accordingly
-if st.session_state.loggedin:
-    # Navigation links in the sidebar
-    st.sidebar.header("Navigation")
-    if st.sidebar.button("Page 1"):
-        st.experimental_set_query_params(logged_in=True, page="main")
-        st.experimental_rerun()
-    if st.sidebar.button("Page 2"):
-        st.experimental_set_query_params(logged_in=True, page="another")
-        st.experimental_rerun()
+  if st.session_state.loggedin:
+        # Navigation links in the sidebar
+        st.sidebar.header("Navigation")
+
+        # CSS style for sidebar buttons
+        st.markdown(
+            """
+            <style>
+            .sidebar-content .block-container.stButton-pressed > button {
+                background-color: blue !important;
+                color: white !important;
+            }
+            .sidebar-content .block-container a:hover,
+            .sidebar-content .block-container button:hover {
+                background-color: darkblue !important;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Handle navigation buttons
+        if st.sidebar.button("Page 1"):
+            st.experimental_set_query_params(logged_in=True, page="main")
+            st.experimental_rerun()
+        if st.sidebar.button("Page 2"):
+            st.experimental_set_query_params(logged_in=True, page="another")
+            st.experimental_rerun()
+
+# Run the app
+if __name__ == "__main__":
+    handle_navigation()
 
     # Load the primary CSV file
     try:
