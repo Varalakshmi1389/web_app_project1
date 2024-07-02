@@ -20,21 +20,25 @@ st.set_page_config(
     }
 )
 
-# Add custom CSS for button color
 st.markdown(
     """
     <style>
-    .sidebar-content button {
+    .sidebar-content .full-width-container .sidebar .block-container a,
+    .sidebar-content .block-container a,
+    .sidebar-content .block-container button {
         background-color: blue !important;
         color: white !important;
     }
-    .sidebar-content button:hover {
+    .sidebar-content .full-width-container .sidebar .block-container a:hover,
+    .sidebar-content .block-container a:hover,
+    .sidebar-content .block-container button:hover {
         background-color: darkblue !important;
     }
     </style>
     """,
     unsafe_allow_html=True
 )
+
 
 # Function to display the main content after login
 def display_main_content(df_merged):
