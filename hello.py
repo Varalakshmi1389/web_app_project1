@@ -95,7 +95,54 @@ def display_another_page(df_merged):
     fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
-    
+  # Function to display another page content
+def display_another_page(df_merged):
+    st.title("Page 2")
+
+    # Sidebar filter for Full Name
+    st.sidebar.header("Filters")
+    selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
+
+    # Apply Full Name filter to the DataFrame
+    if selected_full_names:
+        df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
+    else:
+        df_filtered = df_merged.copy()
+
+    # Group by Full Name to count occurrences of Operation
+    count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
+
+    # Plotting bar chart for Count of Operations by Full Name
+    st.subheader("Count of Operations by Full Name")
+    fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations',
+                               template='seaborn', title='Count of Operations by Full Name')
+    fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
+    st.plotly_chart(fig_bar_full_name, use_container_width=True)
+
+    # Matrix visualization (Heatmap) for UserId vs Operation
+    st.subheader("Matrix Visualization: UserId vs Operation")
+
+    # Create pivot table for heatmap
+    pivot_table = df_filtered.pivot_table(index='Operation', columns='UserId', values='Count of Operations', aggfunc=np.sum, fill_value=0)
+
+    # Create heatmap using plotly
+    fig_heatmap = go.Figure(data=go.Heatmap(
+        z=pivot_table.values,
+        x=pivot_table.columns,
+        y=pivot_table.index,
+        colorscale='Viridis',
+        colorbar=dict(title='Count of Operations')
+    ))
+
+    fig_heatmap.update_layout(title='Matrix Visualization: UserId vs Operation',
+                              xaxis_title='UserId',
+                              yaxis_title='Operation')
+
+    st.plotly_chart(fig_heatmap, use_container_width=True)
+
+# Rest of the code remains unchanged...
+  
     
 
 # Initialize page state
