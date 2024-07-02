@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 import numpy as np
 
 CORRECT_USER_ID = "Admin"
@@ -60,18 +59,6 @@ def display_main_content(df_merged):
     fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
     st.plotly_chart(fig_bar, use_container_width=True)
 
-    # Group by Operation to sum RecordType (just an example, adjust as per your data)
-    # Replace 'RecordType' with an appropriate numeric column if available
-    if 'RecordType' in df_filtered.columns:
-        record_type_summary = df_filtered.groupby('Operation')['RecordType'].sum().reset_index()
-
-        # Plotting pie chart for Sum of RecordType by Operation
-        st.subheader("Sum of RecordType by Operation")
-        fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', 
-                         title='Sum of RecordType by Operation', hole=0.5)
-        fig_pie.update_traces(textposition='inside', textinfo='percent+label')
-        st.plotly_chart(fig_pie, use_container_width=True)
-
 # Function to display another page content
 def display_another_page(df_merged):
     st.title("Page 2")
@@ -89,34 +76,9 @@ def display_another_page(df_merged):
     # Group by Full Name to count occurrences of Operation
     count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
 
-    # Plotting bar chart for Count of Operations by Full Name
+    # Displaying the table of Count of Operations by Full Name
     st.subheader("Count of Operations by Full Name")
-    fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations',
-                               template='seaborn', title='Count of Operations by Full Name')
-    fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-    fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
-    st.plotly_chart(fig_bar_full_name, use_container_width=True)
-
-    # Matrix visualization (Heatmap) for UserId vs Operation
-    st.subheader("Matrix Visualization: UserId vs Operation")
-
-    # For matrix visualization, count occurrences of each Operation by UserId
-    pivot_table = df_filtered.groupby(['UserId', 'Operation']).size().unstack(fill_value=0)
-
-    # Create heatmap using plotly
-    fig_heatmap = go.Figure(data=go.Heatmap(
-        z=pivot_table.values,
-        x=pivot_table.columns,
-        y=pivot_table.index,
-        colorscale='Viridis',
-        colorbar=dict(title='Count of Operations')
-    ))
-
-    fig_heatmap.update_layout(title='Matrix Visualization: UserId vs Operation',
-                              xaxis_title='UserId',
-                              yaxis_title='Operation')
-
-    st.plotly_chart(fig_heatmap, use_container_width=True)
+    st.table(count_by_full_name)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
