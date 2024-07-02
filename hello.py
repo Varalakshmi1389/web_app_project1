@@ -20,6 +20,18 @@ st.set_page_config(
     }
 )
 
+# ... rest of your code ...
+
+# Navigation links in the sidebar
+if st.session_state.loggedin:
+    st.sidebar.header("Navigation")
+    if st.sidebar.button("Page 1", key="page1"):
+        st.experimental_set_query_params(logged_in=True, page="main")
+        st.experimental_rerun()
+    if st.sidebar.button("Page 2", key="page2"):
+        st.experimental_set_query_params(logged_in=True, page="another")
+        st.experimental_rerun()
+
 st.markdown(
     """
     <style>
@@ -42,7 +54,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
 # Function to display the main content after login
 def display_main_content(df_merged):
     st.subheader("Operation Count by UserId, Date, and Operation")
