@@ -128,7 +128,7 @@ if st.session_state.loggedin:
     # Handle navigation buttons
     if st.sidebar.button("Page 1"):
         st.experimental_set_query_params(logged_in=True, page="main")
-        st.experimental_rerun().background-color: blue !important
+        st.experimental_rerun()
     if st.sidebar.button("Page 2"):
         st.experimental_set_query_params(logged_in=True, page="another")
         st.experimental_rerun()
