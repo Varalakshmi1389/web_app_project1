@@ -186,6 +186,7 @@ def display_report3():
         df_filtered = df_merged
 
     if not df_filtered.empty:
+        count_of_Dept= df_filtered.groupby('Dept').size().reset_index(name='Count of Dept')
        
     fig_line = px.line(count_by_dept, x='Dept', y='Count', title='Count of Dept', markers=True)
     fig_line.update_layout(xaxis_title='Dept', yaxis_title='Count')
