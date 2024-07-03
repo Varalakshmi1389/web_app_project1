@@ -152,10 +152,15 @@ def display_report2():
     if not df_filtered.empty:
         count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
 
-        fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations', template='seaborn', title='Count of Operations by Full Name')
+        count_by_full_name['Dept'] = df_filtered.groupby('Fullname')['Dept'].first().values
+
+        fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations', color='Dept', 
+                                   template='seaborn', title='Count of Operations by Full Name with Dept Legend')
         fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
-        fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
+        fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations', legend_title='Dept')
         st.plotly_chart(fig_bar_full_name, use_container_width=True)
+    else:
+        st.warning("No data available to display.")
 
     if 'RecordType' in df_filtered.columns:
             sum_by_full_name = df_filtered.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
