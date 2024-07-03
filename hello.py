@@ -165,7 +165,18 @@ def display_report2():
             st.plotly_chart(fig_area_full_name, use_container_width=True)
     else:
         st.warning("The column 'RecordType' is missing from the filtered DataFrame.")
+        
+    if 'Operation' in df_filtered.columns:
+            scatter_by_full_name = df_filtered.groupby('Fullname')['Operation'].count().reset_index(name='Count of Operation')
 
+            fig_scatter_full_name = px.scatter(scatter_by_full_name, x='Fullname', y='Count of Operation', title='Count of Operation by Full Name', template='seaborn', labels={'Fullname':'Full Name', 'Count of Operation':'Count of Operation'})
+            fig_scatter_full_name.update_traces(marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers+text'))
+            fig_scatter_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operation')
+            st.plotly_chart(fig_scatter_full_name, use_container_width=True)
+        else:
+            st.warning("The column 'Operation' is missing from the filtered DataFrame.")
+    else:
+        st.warning("No data available to display.")
     
 def display_report3():
     st.title("Report3")
