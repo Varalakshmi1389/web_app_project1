@@ -173,8 +173,8 @@ def display_report2():
             fig_scatter_full_name.update_traces(marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers+text'))
             fig_scatter_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operation')
             st.plotly_chart(fig_scatter_full_name, use_container_width=True)
-        else:
-            st.warning("The column 'Operation' is missing from the filtered DataFrame.")
+    else:
+        st.warning("The column 'Operation' is missing from the filtered DataFrame.")
     else:
         st.warning("No data available to display.")
     
