@@ -175,19 +175,16 @@ def display_report3():
         st.error("The column 'Dept' is missing from 'inputfile1.csv'.")
         return
 
-    count_by_dept = df1['Dept'].value_counts().reset_index()
-    count_by_dept.columns = ['Dept', 'Count']
-    
-    selected_full_names = st.sidebar.multiselect("Select Department(s)", df_merged["Dept"].unique())
+    selected_depts = st.sidebar.multiselect("Select Department(s)", df1["Dept"].unique())
 
-    if selected_full_names:
-        df_filtered = df_merged[df_merged['Dept'].isin(selected_full_names)]
+    if selected_depts:
+        df_filtered = df1[df1['Dept'].isin(selected_depts)]
     else:
-        df_filtered = df_merged
+        df_filtered = df1
 
-    if not df_filtered.empty:
-        count_of_Dept= df_filtered.groupby('Dept').size().reset_index(name='Count of Dept')
-       
+    count_by_dept = df_filtered['Dept'].value_counts().reset_index()
+    count_by_dept.columns = ['Dept', 'Count']
+
     fig_line = px.line(count_by_dept, x='Dept', y='Count', title='Count of Dept', markers=True)
     fig_line.update_layout(xaxis_title='Dept', yaxis_title='Count')
     st.plotly_chart(fig_line, use_container_width=True)
