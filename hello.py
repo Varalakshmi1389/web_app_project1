@@ -182,6 +182,10 @@ def display_report3():
     fig_line.update_layout(xaxis_title='Dept', yaxis_title='Count')
     st.plotly_chart(fig_line, use_container_width=True)
 
+    fig_pie = px.pie(count_by_dept, names='Dept', values='Count', title='Count of Operations by Dept')
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+
 # Initialize page state
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
