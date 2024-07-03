@@ -177,7 +177,16 @@ def display_report3():
 
     count_by_dept = df1['Dept'].value_counts().reset_index()
     count_by_dept.columns = ['Dept', 'Count']
+    
+    selected_full_names = st.sidebar.multiselect("Select Department(s)", df_merged["Dept"].unique())
 
+    if selected_full_names:
+        df_filtered = df_merged[df_merged['Dept'].isin(selected_full_names)]
+    else:
+        df_filtered = df_merged
+
+    if not df_filtered.empty:
+       
     fig_line = px.line(count_by_dept, x='Dept', y='Count', title='Count of Dept', markers=True)
     fig_line.update_layout(xaxis_title='Dept', yaxis_title='Count')
     st.plotly_chart(fig_line, use_container_width=True)
