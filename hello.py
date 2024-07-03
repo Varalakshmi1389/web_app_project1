@@ -90,17 +90,17 @@ def display_report1():
     st.write(df_merged)
 
     # Group by UserId, Date, and Operation to count occurrences
-    summary_df = df_merged.groupby(['Fullname', 'UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+    summary_df = df_merged.groupby(['Date','UserId','Fullname','Operation']).size().reset_index(name='Count of Operations')
 
-    final_summary_df = summary_df.groupby('Fullname').agg({
+    final_summary_df = summary_df.groupby('Date').agg({
         'UserId': 'first',
-        'Date': 'first',
+        'Fullname': 'first',
         'Operation': 'first',
         'Count of Operations': 'sum'
     }).reset_index()
 
     st.subheader("Operation Count by UserId, Date, and Operation")
-    st.table(final_summary_df[['Fullname', 'UserId', 'Date', 'Operation', 'Count of Operations']])
+    st.table(final_summary_df[['Date','UserId','Fullname','Operation', 'Count of Operations']])
 
     # Group by Date to count occurrences of Operation
     count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
