@@ -166,15 +166,7 @@ def display_report2():
     else:
         st.warning("The column 'RecordType' is missing from the filtered DataFrame.")
 
-    if 'Opration' in df_filtered.columns:
-            count_by_full_name = df_filtered.groupby('Fullname')['Operation'].count().reset_index(name='count of Operation')
-
-            fig_donut_full_name = px.donut(count_by_full_name, x='Fullname', y='count of Operation', template='seaborn', title='Count of Operation by Full Name')
-            fig_donut_full_name.update_layout(xaxis_title='Fullname', yaxis_title='count of Operation')
-            st.plotly_chart(fig_donut_full_name, use_container_width=True)
-    else:
-        st.warning("The column 'Operation' is missing from the filtered DataFrame.")
-
+    
 def display_report3():
     st.title("Report3")
 
