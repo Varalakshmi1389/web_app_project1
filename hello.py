@@ -175,9 +175,7 @@ def display_report2():
             st.plotly_chart(fig_scatter_full_name, use_container_width=True)
     else:
         st.warning("The column 'Operation' is missing from the filtered DataFrame.")
-    else:
-        st.warning("No data available to display.")
-    
+  
 def display_report3():
     st.title("Report3")
 
