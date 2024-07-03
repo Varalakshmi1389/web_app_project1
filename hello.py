@@ -157,6 +157,15 @@ def display_report2():
         fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations')
         st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
+    if 'RecordType' in df_filtered.columns:
+            sum_by_full_name = df_filtered.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
+
+            fig_area_full_name = px.area(sum_by_full_name, x='Fullname', y='Sum of RecordType', template='seaborn', title='Sum of RecordType by Full Name')
+            fig_area_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+            st.plotly_chart(fig_area_full_name, use_container_width=True)
+        else:
+            st.warning("The column 'RecordType' is missing from the filtered DataFrame.")
+
 def display_report3():
     st.title("Report3")
 
