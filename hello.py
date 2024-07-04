@@ -233,9 +233,7 @@ def display_report3():
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
     matrix_data = df_filtered.pivot_table(index='Dept', columns='RecordType', aggfunc='size', fill_value=0)
-    fig_matrix = px.imshow(matrix_data, labels=dict(x="RecordType", y="Dept", color="Count"), title='Dept and RecordType Matrix')
-    st.plotly_chart(fig_matrix, use_container_width=True)
-
+    st.dataframe(matrix_data)
 
 # Initialize page state
 if "loggedin" not in st.session_state:
