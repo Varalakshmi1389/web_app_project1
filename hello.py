@@ -232,7 +232,7 @@ def display_report3():
     fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
-    matrix_data = df_filtered.pivot_table(index='Dept', columns='RecordType', aggfunc='size', fill_value=0)
+    matrix_data = df_filtered.pivot_table(index='Dept', columns='Operation',values='RecordType' aggfunc='size', fill_value=0)
     st.dataframe(matrix_data)
 
 # Initialize page state
