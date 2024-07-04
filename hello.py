@@ -160,7 +160,7 @@ def display_report2():
         fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations', legend_title='Dept')
         st.plotly_chart(fig_bar_full_name, use_container_width=True)
 
-        fig_donut_full_name = px.pie(sum_by_full_name, names='Fullname', values='Sum of RecordType', title='Sum of RecordType by Full Name', hole=0.3)
+        fig_donut_full_name = px.pie(sum_by_full_name, names='Fullname', values='Count of Operations', title='Count of Operations by Full Name', hole=0.3)
         fig_donut_full_name.update_traces(textposition='inside', textinfo='percent+label')
         st.plotly_chart(fig_donut_full_name, use_container_width=True)
     else:
