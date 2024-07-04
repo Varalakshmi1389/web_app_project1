@@ -196,6 +196,10 @@ def display_report3():
         st.error("The column 'Dept' is missing from 'inputfile1.csv'.")
         return
 
+    if 'RecordType' not in df1.columns:
+        st.error("The column 'RecordType' is missing from 'inputfile1.csv'.")
+        return
+
     selected_depts = st.sidebar.multiselect("Select Department(s)", df1["Dept"].unique())
 
     if selected_depts:
@@ -221,6 +225,7 @@ def display_report3():
     fig_stacked_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
     fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
+
 
 # Initialize page state
 if "loggedin" not in st.session_state:
