@@ -232,6 +232,10 @@ def display_report3():
     fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
+    matrix_data = df_filtered.pivot_table(index='Dept', columns='RecordType', aggfunc='size', fill_value=0)
+    fig_matrix = px.imshow(matrix_data, labels=dict(x="RecordType", y="Dept", color="Count"), title='Dept and RecordType Matrix')
+    st.plotly_chart(fig_matrix, use_container_width=True)
+
 
 # Initialize page state
 if "loggedin" not in st.session_state:
