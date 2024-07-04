@@ -202,16 +202,16 @@ def display_report3():
 
     df_merged = merge_dataframes(df, df1)
 
-    if 'RecordType' not in df1.columns:
+    if 'RecordType' not in df_merged.columns:
         st.error("The column 'RecordType' is missing from 'inputfile1.csv'.")
         return
 
-    selected_depts = st.sidebar.multiselect("Select Department(s)", df1["Dept"].unique())
+    selected_depts = st.sidebar.multiselect("Select Department(s)", df_merged["Dept"].unique())
 
     if selected_depts:
-        df_filtered = df1[df1['Dept'].isin(selected_depts)]
+        df_filtered = df_merged[df1['Dept'].isin(selected_depts)]
     else:
-        df_filtered = df1
+        df_filtered = df_merged
 
     count_by_dept = df_filtered['Dept'].value_counts().reset_index()
     count_by_dept.columns = ['Dept', 'Count']
