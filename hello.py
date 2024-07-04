@@ -121,8 +121,6 @@ def display_report1():
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
-
-
 def display_report2():
     st.title("Report2")
     
@@ -137,6 +135,12 @@ def display_report2():
         return
 
     df_merged = merge_dataframes(df, df1)
+
+    if 'Fullname' not in df_merged.columns:
+        st.error("The column 'Fullname' is missing from the merged DataFrame.")
+        return
+
+    selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
 
     if selected_full_names:
         df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
@@ -182,6 +186,7 @@ def display_report2():
         st.plotly_chart(fig_scatter_full_name, use_container_width=True)
     else:
         st.warning("The column 'Operation' is missing from the filtered DataFrame.")
+
 def display_report3():
     st.title("Report3")
 
