@@ -203,13 +203,13 @@ def display_report3():
     df_merged = merge_dataframes(df, df1)
 
     if 'RecordType' not in df_merged.columns:
-        st.error("The column 'RecordType' is missing from 'inputfile1.csv'.")
+        st.error("The column 'RecordType' is missing from the merged DataFrame.")
         return
 
     selected_depts = st.sidebar.multiselect("Select Department(s)", df_merged["Dept"].unique())
 
     if selected_depts:
-        df_filtered = df_merged[df1['Dept'].isin(selected_depts)]
+        df_filtered = df_merged[df_merged['Dept'].isin(selected_depts)]
     else:
         df_filtered = df_merged
 
@@ -232,8 +232,10 @@ def display_report3():
     fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
     st.plotly_chart(fig_stacked_bar, use_container_width=True)
 
+    # Adding matrix visual to display Dept and RecordType with nested index
     matrix_data = df_filtered.pivot_table(index=['Dept', 'Fullname'], columns='Operation', values='RecordType', aggfunc='sum', fill_value=0)
     st.dataframe(matrix_data)
+
 
 # Initialize page state
 if "loggedin" not in st.session_state:
