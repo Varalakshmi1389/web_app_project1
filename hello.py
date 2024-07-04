@@ -117,7 +117,7 @@ def display_report1():
 
     # Plotting pie chart for Sum of RecordType by Operation
     st.subheader("Sum of RecordType by Operation")
-    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', title='Sum of RecordType by Operation', hole=2.8)
+    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', title='Sum of RecordType by Operation', hole=3.8)
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
