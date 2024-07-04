@@ -138,12 +138,6 @@ def display_report2():
 
     df_merged = merge_dataframes(df, df1)
 
-    if 'Fullname' not in df_merged.columns:
-        st.error("The column 'Fullname' is missing from the merged DataFrame.")
-        return
-
-    selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
-
     if selected_full_names:
         df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
     else:
@@ -151,7 +145,6 @@ def display_report2():
 
     if not df_filtered.empty:
         count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
-
         count_by_full_name['Dept'] = df_filtered.groupby('Fullname')['Dept'].first().values
 
         fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations', color='Dept', 
@@ -159,36 +152,36 @@ def display_report2():
         fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
         fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations', legend_title='Dept')
         st.plotly_chart(fig_bar_full_name, use_container_width=True)
-
-        fig_donut_full_name = px.pie(sum_by_full_name, names='Fullname', values='Count of Operations', title='Count of Operations by Full Name', hole=0.3)
-        fig_donut_full_name.update_traces(textposition='inside', textinfo='percent+label')
-        st.plotly_chart(fig_donut_full_name, use_container_width=True)
     else:
         st.warning("No data available to display.")
 
     if 'RecordType' in df_filtered.columns:
-            sum_by_full_name = df_filtered.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
+        sum_by_full_name = df_filtered.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
 
-            fig_area_full_name = px.area(sum_by_full_name, x='Fullname', y='Sum of RecordType', template='seaborn', title='Sum of RecordType by Full Name')
-            fig_area_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
-            st.plotly_chart(fig_area_full_name, use_container_width=True)
+        fig_area_full_name = px.area(sum_by_full_name, x='Fullname', y='Sum of RecordType', template='seaborn', title='Sum of RecordType by Full Name')
+        fig_area_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+        st.plotly_chart(fig_area_full_name, use_container_width=True)
 
-            ribbon_chart = px.line(sum_by_full_name, x='Fullname', y='Sum of RecordType', markers=True, title='Ribbon Chart: Sum of RecordType by Fullname')
-            ribbon_chart.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
-            st.plotly_chart(ribbon_chart, use_container_width=True)
+        ribbon_chart = px.line(sum_by_full_name, x='Fullname', y='Sum of RecordType', markers=True, title='Ribbon Chart: Sum of RecordType by Fullname')
+        ribbon_chart.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+        st.plotly_chart(ribbon_chart, use_container_width=True)
+
+        # Add donut chart for Sum of RecordType by Fullname
+        fig_donut_full_name = px.pie(sum_by_full_name, names='Fullname', values='Sum of RecordType', title='Sum of RecordType by Full Name', hole=0.3)
+        fig_donut_full_name.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_donut_full_name, use_container_width=True)
     else:
         st.warning("The column 'RecordType' is missing from the filtered DataFrame.")
         
     if 'Operation' in df_filtered.columns:
-            scatter_by_full_name = df_filtered.groupby('Fullname')['Operation'].count().reset_index(name='Count of Operation')
+        scatter_by_full_name = df_filtered.groupby('Fullname')['Operation'].count().reset_index(name='Count of Operation')
 
-            fig_scatter_full_name = px.scatter(scatter_by_full_name, x='Fullname', y='Count of Operation', title='Count of Operation by Full Name', template='seaborn', labels={'Fullname':'Full Name', 'Count of Operation':'Count of Operation'})
-            fig_scatter_full_name.update_traces(marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers+text'))
-            fig_scatter_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operation')
-            st.plotly_chart(fig_scatter_full_name, use_container_width=True)
+        fig_scatter_full_name = px.scatter(scatter_by_full_name, x='Fullname', y='Count of Operation', title='Count of Operation by Full Name', template='seaborn', labels={'Fullname':'Full Name', 'Count of Operation':'Count of Operation'})
+        fig_scatter_full_name.update_traces(marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers+text'))
+        fig_scatter_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operation')
+        st.plotly_chart(fig_scatter_full_name, use_container_width=True)
     else:
         st.warning("The column 'Operation' is missing from the filtered DataFrame.")
-  
 def display_report3():
     st.title("Report3")
 
