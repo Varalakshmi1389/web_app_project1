@@ -214,6 +214,14 @@ def display_report3():
     fig_pie.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_pie, use_container_width=True)
 
+    sum_by_dept = df_filtered.groupby('Dept')['RecordType'].sum().reset_index(name='Sum of RecordType')
+
+    fig_stacked_bar = px.bar(sum_by_dept, x='Dept', y='Sum of RecordType', title='Sum of RecordType by Dept', color='Dept', 
+                             text='Sum of RecordType', template='seaborn')
+    fig_stacked_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
+    st.plotly_chart(fig_stacked_bar, use_container_width=True)
+
 # Initialize page state
 if "loggedin" not in st.session_state:
     st.session_state.loggedin = False
