@@ -1,10 +1,294 @@
+import streamlit as st
 import pandas as pd
+import plotly.express as px
 
-# URL of the penguin dataset CSV file on GitHub
-url = 'https://raw.githubusercontent.com/allisonhorst/palmerpenguins/main/inst/extdata/penguins.csv'
+CORRECT_USER_ID = "Admin"
+CORRECT_PASSWORD = "123"
 
-# Load the dataset into a pandas DataFrame
-penguins = pd.read_csv(url)
+# Page configuration should be set before any Streamlit elements are created
+st.set_page_config(
+    page_title="Operations",
+    page_icon="🧊",
+    layout="wide",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'Get Help': 'https://www.extremelycoolapp.com/help',
+        'Report a bug': "https://www.extremelycoolapp.com/bug",
+        'About': "# This is a header. This is an *extremely* cool app!"
+    }
+)
 
-# Display the first few rows of the dataset
-print(penguins.head())
+@st.cache_data
+def load_csv(file_path):
+    try:
+        return pd.read_csv(file_path)
+    except FileNotFoundError:
+        st.error(f"The file '{file_path}' was not found.")
+        return pd.DataFrame()
+
+@st.cache_data
+def merge_dataframes(df1, df2):
+    if not df2.empty:
+        return pd.merge(df1, df2, left_on='UserId', right_on='Userid', how='left')
+    return df1
+
+@st.cache_data
+def process_data(df):
+    df['Date'] = pd.to_datetime(df['CreationDate']).dt.date
+    summary_df = df.groupby(['Fullname', 'UserId', 'Date', 'Operation']).size().reset_index(name='Count of Operations')
+    final_summary_df = summary_df.groupby('Fullname').agg({
+        'UserId': 'first',
+        'Date': 'first',
+        'Operation': 'first',
+        'Count of Operations': 'sum'
+    }).reset_index()
+    return final_summary_df
+
+def display_report1():
+    st.title("Report1")
+    # Load the primary CSV file
+    try:
+        df = pd.read_csv("inputfile.csv")
+    except FileNotFoundError:
+        st.error("The file 'inputfile.csv' was not found.")
+        return
+
+    # Load the secondary CSV file
+    try:
+        df1 = pd.read_csv("inputfile1.csv")
+    except FileNotFoundError:
+        st.warning("The file 'inputfile1.csv' was not found. Proceeding with only 'inputfile.csv'.")
+        df1 = pd.DataFrame()  # Empty DataFrame if the file is not found
+
+    # Check if the necessary columns exist
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        return
+    if not df1.empty and 'Userid' not in df1.columns:
+        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
+        return
+
+    # Perform a left join if the secondary DataFrame is not empty
+    if not df1.empty:
+        df_merged = pd.merge(df, df1, left_on='UserId', right_on='Userid', how='left')
+    else:
+        df_merged = df
+
+    df_merged['Date'] = pd.to_datetime(df_merged['CreationDate']).dt.date
+
+    # Sidebar filters for Operation and CreationDate
+    st.sidebar.header("Filters")
+    selected_operation = st.sidebar.multiselect("Select Operation(s)", df_merged["Operation"].unique())
+    selected_dates = st.sidebar.multiselect("Select Date(s)", df_merged["CreationDate"].unique())
+
+    # Apply filters to create filtered DataFrame
+    if selected_operation:
+        df_merged = df_merged[df_merged['Operation'].isin(selected_operation)]
+    if selected_dates:
+        df_merged = df_merged[df_merged['CreationDate'].isin(selected_dates)]
+
+    st.write(df_merged)
+
+    # Group by UserId, Date, and Operation to count occurrences
+    summary_df = df_merged.groupby(['Date','UserId','Fullname','Operation']).size().reset_index(name='Count of Operations')
+
+    final_summary_df = summary_df.groupby('Date').agg({
+        'UserId': 'first',
+        'Fullname': 'first',
+        'Operation': 'first',
+        'Count of Operations': 'sum'
+    }).reset_index()
+
+    st.subheader("Operation Count by UserId, Date, and Operation")
+    st.table(final_summary_df[['Date','UserId','Fullname','Operation', 'Count of Operations']])
+
+    # Group by Date to count occurrences of Operation
+    count_by_date = df_merged.groupby('Date').size().reset_index(name='Count of Operations')
+
+    # Plotting bar chart for Count of Operations by CreationDate
+    st.subheader("Count of Operations by Creation Date")
+    fig_bar = px.bar(count_by_date, x='Date', y='Count of Operations', text='Count of Operations', template='seaborn', title='Count of Operations by Creation Date')
+    fig_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_bar.update_layout(xaxis_title='Creation Date', yaxis_title='Count of Operations')
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+    # Group by Operation to sum RecordType
+    record_type_summary = df_merged.groupby('Operation')['RecordType'].sum().reset_index()
+
+    # Plotting pie chart for Sum of RecordType by Operation
+    st.subheader("Sum of RecordType by Operation")
+    fig_pie = px.pie(record_type_summary, values='RecordType', names='Operation', title='Sum of RecordType by Operation', hole=0.5)
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+
+def display_report2():
+    st.title("Report2")
+    
+    df = load_csv("inputfile.csv")
+    df1 = load_csv("inputfile1.csv")
+
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        return
+    if not df1.empty and 'Userid' not in df1.columns:
+        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
+        return
+
+    df_merged = merge_dataframes(df, df1)
+
+    if 'Fullname' not in df_merged.columns:
+        st.error("The column 'Fullname' is missing from the merged DataFrame.")
+        return
+
+    selected_full_names = st.sidebar.multiselect("Select Full Name(s)", df_merged["Fullname"].unique())
+
+    if selected_full_names:
+        df_filtered = df_merged[df_merged['Fullname'].isin(selected_full_names)]
+    else:
+        df_filtered = df_merged
+
+    if not df_filtered.empty:
+        count_by_full_name = df_filtered.groupby('Fullname').size().reset_index(name='Count of Operations')
+        count_by_full_name['Dept'] = df_filtered.groupby('Fullname')['Dept'].first().values
+
+        fig_bar_full_name = px.bar(count_by_full_name, x='Fullname', y='Count of Operations', text='Count of Operations', color='Dept', 
+                                   template='seaborn', title='Count of Operations by Full Name with Dept Legend')
+        fig_bar_full_name.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+        fig_bar_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operations', legend_title='Dept')
+        st.plotly_chart(fig_bar_full_name, use_container_width=True)
+    else:
+        st.warning("No data available to display.")
+
+    if 'RecordType' in df_filtered.columns:
+        sum_by_full_name = df_filtered.groupby('Fullname')['RecordType'].sum().reset_index(name='Sum of RecordType')
+
+        fig_area_full_name = px.area(sum_by_full_name, x='Fullname', y='Sum of RecordType', template='seaborn', title='Sum of RecordType by Full Name')
+        fig_area_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+        st.plotly_chart(fig_area_full_name, use_container_width=True)
+
+        ribbon_chart = px.line(sum_by_full_name, x='Fullname', y='Sum of RecordType', markers=True, title='Ribbon Chart: Sum of RecordType by Fullname')
+        ribbon_chart.update_layout(xaxis_title='Fullname', yaxis_title='Sum of RecordType')
+        st.plotly_chart(ribbon_chart, use_container_width=True)
+
+        # Add donut chart for Sum of RecordType by Fullname
+        fig_donut_full_name = px.pie(sum_by_full_name, names='Fullname', values='Sum of RecordType', title='Sum of RecordType by Full Name', hole=0.3)
+        fig_donut_full_name.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig_donut_full_name, use_container_width=True)
+    else:
+        st.warning("The column 'RecordType' is missing from the filtered DataFrame.")
+        
+    if 'Operation' in df_filtered.columns:
+        scatter_by_full_name = df_filtered.groupby('Fullname')['Operation'].count().reset_index(name='Count of Operation')
+
+        fig_scatter_full_name = px.scatter(scatter_by_full_name, x='Fullname', y='Count of Operation', title='Count of Operation by Full Name', template='seaborn', labels={'Fullname':'Full Name', 'Count of Operation':'Count of Operation'})
+        fig_scatter_full_name.update_traces(marker=dict(size=12, line=dict(width=2, color='DarkSlateGrey')), selector=dict(mode='markers+text'))
+        fig_scatter_full_name.update_layout(xaxis_title='Fullname', yaxis_title='Count of Operation')
+        st.plotly_chart(fig_scatter_full_name, use_container_width=True)
+    else:
+        st.warning("The column 'Operation' is missing from the filtered DataFrame.")
+
+def display_report3():
+    st.title("Report3")
+    
+    df = load_csv("inputfile.csv")
+    df1 = load_csv("inputfile1.csv")
+
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
+        return
+    if not df1.empty and 'Userid' not in df1.columns:
+        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
+        return
+
+    df_merged = merge_dataframes(df, df1)
+
+    if 'RecordType' not in df_merged.columns:
+        st.error("The column 'RecordType' is missing from the merged DataFrame.")
+        return
+
+    selected_depts = st.sidebar.multiselect("Select Department(s)", df_merged["Dept"].unique())
+
+    if selected_depts:
+        df_filtered = df_merged[df_merged['Dept'].isin(selected_depts)]
+    else:
+        df_filtered = df_merged
+
+    count_by_dept = df_filtered['Dept'].value_counts().reset_index()
+    count_by_dept.columns = ['Dept', 'Count']
+
+    fig_line = px.line(count_by_dept, x='Dept', y='Count', title='Count of Dept', markers=True)
+    fig_line.update_layout(xaxis_title='Dept', yaxis_title='Count')
+    st.plotly_chart(fig_line, use_container_width=True)
+
+    fig_pie = px.pie(count_by_dept, names='Dept', values='Count', title='Count of Operations by Dept')
+    fig_pie.update_traces(textposition='inside', textinfo='percent+label')
+    st.plotly_chart(fig_pie, use_container_width=True)
+
+    sum_by_dept = df_filtered.groupby('Dept')['RecordType'].sum().reset_index(name='Sum of RecordType')
+
+    fig_stacked_bar = px.bar(sum_by_dept, x='Dept', y='Sum of RecordType', title='Sum of RecordType by Dept', color='Dept', 
+                             text='Sum of RecordType', template='seaborn')
+    fig_stacked_bar.update_traces(texttemplate='%{text:.2s}', textposition='outside')
+    fig_stacked_bar.update_layout(xaxis_title='Dept', yaxis_title='Sum of RecordType', barmode='stack', legend_title='Dept')
+    st.plotly_chart(fig_stacked_bar, use_container_width=True)
+
+    # Adding matrix visual to display Dept and RecordType with nested index
+    matrix_data = df_filtered.pivot_table(index=['Dept', 'Fullname'], columns='Operation', values='RecordType', aggfunc='sum', fill_value=0)
+    st.dataframe(matrix_data)
+
+
+# Initialize page state
+if "loggedin" not in st.session_state:
+    st.session_state.loggedin = False
+
+# Check if logged_in query parameter is set to True
+query_params = st.experimental_get_query_params()
+if query_params.get('logged_in') == ['true']:
+    st.session_state.loggedin = True
+
+# Check if logged in and display content accordingly
+if st.session_state.loggedin:
+    st.sidebar.header("Navigation")
+
+    is_page_report1 = query_params.get('page', ['report1'])[0] == 'report1'
+    is_page_report2 = query_params.get('page', ['report1'])[0] == 'report2'
+    is_page_report3 = query_params.get('page', ['report1'])[0] == 'report3'
+
+    report1_button_css = '<style>div.stButton > button:first-child {background-color: #007bff;color:white;}</style>'
+    report2_button_css = '<style>div.stButton > button:first-child {background-color: #007bff;color:white;}</style>'
+    report3_button_css = '<style>div.stButton > button:first-child {background-color: #007bff;color:white;}</style>'
+
+    if is_page_report1:
+        st.markdown(report1_button_css, unsafe_allow_html=True)
+    elif is_page_report2:
+        st.markdown(report2_button_css, unsafe_allow_html=True)
+    elif is_page_report3:
+        st.markdown(report3_button_css, unsafe_allow_html=True)
+
+    report1_button = st.sidebar.button("Report1", key='report1_button', help="Go to Report1", on_click=lambda: st.experimental_set_query_params(logged_in=True, page="report1"))
+    report2_button = st.sidebar.button("Report2", key='report2_button', help="Go to Report2", on_click=lambda: st.experimental_set_query_params(logged_in=True, page="report2"))
+    report3_button = st.sidebar.button("Report3", key='report3_button', help="Go to Report3", on_click=lambda: st.experimental_set_query_params(logged_in=True, page="report3"))
+
+    if is_page_report1:
+        display_report1()
+    elif is_page_report2:
+        display_report2()
+    elif is_page_report3:
+        display_report3()
+
+else:
+    st.sidebar.header("Login")
+
+    user_id = st.text_input("User ID")
+    password = st.text_input("Password", type="password")
+
+    login_button = st.button("Login")
+
+    if login_button:
+        if user_id == CORRECT_USER_ID and password == CORRECT_PASSWORD:
+            st.success("Logged in successfully!")
+            st.session_state.loggedin = True
+            st.experimental_set_query_params(logged_in=True)
+            st.experimental_rerun()
+        else:
+            st.error("Incorrect User ID or Password. Please try again.")
