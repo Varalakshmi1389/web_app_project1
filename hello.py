@@ -189,12 +189,18 @@ def display_report2():
 
 def display_report3():
     st.title("Report3")
-
+    
+    df = load_csv("inputfile.csv")
     df1 = load_csv("inputfile1.csv")
 
-    if 'Dept' not in df1.columns:
-        st.error("The column 'Dept' is missing from 'inputfile1.csv'.")
+    if 'UserId' not in df.columns:
+        st.error("The column 'UserId' is missing from 'inputfile.csv'.")
         return
+    if not df1.empty and 'Userid' not in df1.columns:
+        st.error("The column 'Userid' is missing from 'inputfile1.csv'.")
+        return
+
+    df_merged = merge_dataframes(df, df1)
 
     if 'RecordType' not in df1.columns:
         st.error("The column 'RecordType' is missing from 'inputfile1.csv'.")
